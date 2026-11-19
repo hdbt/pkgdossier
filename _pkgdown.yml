@@ -1,0 +1,54 @@
+# The site for pkgdossier, built by .github/workflows/pkgdown.yaml and published to
+# GitHub Pages. Add the url to URL in DESCRIPTION once the site is live there (CRAN
+# checks every URL in DESCRIPTION).
+url: https://hdbt.github.io/pkgdossier/
+
+template:
+  bootstrap: 5
+
+home:
+  title: "pkgdossier: compare what users meet before and after a package upgrade"
+
+reference:
+- title: Describe a dossier
+  desc: >
+    Where the two versions come from and which code to run. Nothing is fetched or
+    run until the stages below.
+  contents:
+  - dossier
+  - sources
+  - deps
+  - from_vignettes
+  - step
+  - default_skip_classes
+  - example_dossier
+- title: Run it
+  desc: >
+    Each stage caches its work in the work folder; run_dossier() calls them all.
+  contents:
+  - run_dossier
+  - prepare_versions
+  - run_scenarios
+  - compare_runs
+- title: Read and share the results
+  contents:
+  - differences
+  - summary.pkgdossier_comparison
+  - write_dossier_html
+  - write_dossier_json
+  - write_dossier_md
+- title: Pull requests and continuous integration
+  contents:
+  - accept_differences
+  - check_differences
+
+articles:
+- title: Guides
+  navbar: ~
+  contents:
+  - pkgdossier
+
+navbar:
+  structure:
+    left: [intro, reference, news]
+    right: [search, github]

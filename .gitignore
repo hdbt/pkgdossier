@@ -1,0 +1,14 @@
+*.Rcheck/
+*.tar.gz
+.Rproj.user
+.Rhistory
+.RData
+!inst/extdata/*.tar.gz
+/doc/
+/Meta/
+docs/
+.claude/
+CLAUDE.md
+CLAUDE.local.md
+/dev/
+/.github/workflows/corpus.yaml

@@ -1,0 +1,794 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>__PKG__ __CAND_VERSION__ upgrade dossier</title>
+<style>
+/* Layout: upgrade dossier. Provenance strip, then findings and the labelled differences,
+   then one evidence block per scenario (timing, output, numbers, plots). The baseline is
+   always on the left in blue, the candidate always on the right in orange. */
+:root {
+  --bg: #f3f5f8;
+  --surface: #ffffff;
+  --ink: #17202c;
+  --muted: #586374;
+  --line: #d8dde5;
+  --old: #2c5ea8;
+  --old-soft: #e2eaf6;
+  --old-mark: #c3d5f1;
+  --new: #b04f16;
+  --new-soft: #f8e7dc;
+  --new-mark: #f1c6a8;
+  --bad: #b3261e;
+  --bad-soft: #f8dfdc;
+  --warn: #6f5300;
+  --warn-soft: #f4ebcc;
+  --good: #2b6a39;
+  --good-soft: #dcefe0;
+  /* system fonts only: the page makes no request outside its own folder */
+  --font-display: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-body: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", Consolas, "Liberation Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #10141a; --surface: #171c24; --ink: #e4e8ef; --muted: #9aa4b4; --line: #2a313c;
+    --old: #8ab0ee; --old-soft: #1b2940; --old-mark: #2d4a78;
+    --new: #f2a46c; --new-soft: #382418; --new-mark: #714023;
+    --bad: #ff8b80; --bad-soft: #3a1c1a; --warn: #e7c45e; --warn-soft: #322a10;
+    --good: #86d197; --good-soft: #17301d;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #10141a; --surface: #171c24; --ink: #e4e8ef; --muted: #9aa4b4; --line: #2a313c;
+  --old: #8ab0ee; --old-soft: #1b2940; --old-mark: #2d4a78;
+  --new: #f2a46c; --new-soft: #382418; --new-mark: #714023;
+  --bad: #ff8b80; --bad-soft: #3a1c1a; --warn: #e7c45e; --warn-soft: #322a10;
+  --good: #86d197; --good-soft: #17301d;
+  color-scheme: dark;
+}
+body { background: var(--bg); color: var(--ink); font: 15px/1.55 var(--font-body); }
+body::before {
+  content: ""; position: fixed; inset: 0 0 auto;
+  height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg);
+}
+.wrap {
+  max-width: 1120px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; line-height: 1.15; margin: 0; }
+h1 { font-size: clamp(1.7rem, 3.4vw, 2.4rem); font-weight: 700; letter-spacing: -0.01em; }
+h2 { font-size: 1.5rem; font-weight: 650; }
+h3 { font-size: 1.08rem; font-weight: 600; }
+p { margin: 0; }
+code, pre, .mono { font-family: var(--font-mono); }
+a { color: inherit; text-decoration-color: var(--muted); text-underline-offset: 2px; }
+a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px solid var(--old); outline-offset: 2px; border-radius: 4px; }
+.eyebrow { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.v-old { color: var(--old); }
+.v-new { color: var(--new); }
+.masthead { padding-block: 40px 28px; display: grid; gap: 18px; }
+.lede { max-width: 68ch; color: var(--muted); font-size: 1.02rem; }
+.prov { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.prov > div { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; min-width: 0; display: grid; gap: 4px; }
+.prov .tag { font-family: var(--font-display); font-size: 1.25rem; font-weight: 650; }
+.prov .old { border-top: 4px solid var(--old); }
+.prov .new { border-top: 4px solid var(--new); }
+.prov dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 2px 12px; font-size: 0.86rem; }
+.prov dt { color: var(--muted); }
+.prov dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.shared { font-size: 0.86rem; color: var(--muted); }
+nav.jump { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); }
+nav.jump .wrap { display: flex; gap: 6px 18px; flex-wrap: wrap; padding-block: 10px; font-size: 0.9rem; }
+nav.jump a { text-decoration: none; color: var(--muted); font-weight: 700; }
+nav.jump a:hover { color: var(--ink); }
+section { padding-block: 28px; }
+.sec-head { display: grid; gap: 6px; margin-bottom: 16px; }
+.findings { display: grid; gap: 10px; }
+.finding { display: grid; grid-template-columns: 92px 1fr; gap: 14px; align-items: start; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; }
+.finding .what { font-weight: 700; }
+.finding .why { color: var(--muted); font-size: 0.93rem; }
+.finding .see { font-size: 0.85rem; }
+.kind { display: inline-block; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); text-align: center; }
+.kind.estimate { background: var(--new-soft); color: var(--new); border-color: transparent; }
+.kind.output { background: var(--old-soft); color: var(--old); border-color: transparent; }
+.kind.time { background: var(--warn-soft); color: var(--warn); border-color: transparent; }
+.kind.plot { background: var(--good-soft); color: var(--good); border-color: transparent; }
+.scenario { border-top: 1px solid var(--line); }
+.scorecard { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 18px; }
+.stat { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; min-width: 132px; display: grid; gap: 1px; }
+.stat b { font-family: var(--font-display); font-size: 1.25rem; font-variant-numeric: tabular-nums; }
+.stat span { font-size: 0.78rem; color: var(--muted); }
+.stat.flag { border-color: var(--bad); }
+.takeaways { margin: 0 0 20px; padding-left: 1.2em; display: grid; gap: 6px; max-width: 80ch; }
+.block { margin-top: 22px; display: grid; gap: 10px; }
+.block > h3 { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.block > h3 small { font-family: var(--font-body); font-weight: 400; font-size: 0.85rem; color: var(--muted); }
+.chart { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 6px 4px; overflow-x: auto; }
+.chart svg { display: block; width: 100%; min-width: 560px; height: auto; }
+.chart .lbl { fill: var(--ink); font: 12px var(--font-body); }
+.chart .tick { fill: var(--muted); font: 10.5px var(--font-mono); }
+.chart .grid { stroke: var(--line); stroke-width: 1; }
+.chart .bar { stroke: var(--muted); stroke-width: 2; opacity: 0.55; }
+.chart .dot-old { fill: var(--old); }
+.chart .dot-new { fill: var(--new); }
+.chart .ratio { font: 600 12px var(--font-mono); fill: var(--muted); }
+.chart .ratio.slower { fill: var(--new); }
+.chart .ratio.faster { fill: var(--good); }
+.legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 0.82rem; color: var(--muted); padding: 2px 10px 8px; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; }
+details.step { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+details.step + details.step { margin-top: 8px; }
+details.step > summary { list-style: none; cursor: pointer; padding: 10px 14px; display: flex; gap: 8px 12px; align-items: center; flex-wrap: wrap; }
+details.step > summary::-webkit-details-marker { display: none; }
+details.step > summary::before { content: "\25B8"; color: var(--muted); font-size: 0.8rem; transition: transform 0.15s; }
+details.step[open] > summary::before { transform: rotate(90deg); }
+.step-label { font-family: var(--font-mono); font-size: 0.86rem; font-weight: 600; min-width: 0; overflow-wrap: anywhere; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; margin-left: auto; }
+.chip { font-size: 0.74rem; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.chip.changed { background: var(--new-soft); color: var(--new); border-color: transparent; }
+.chip.error { background: var(--bad-soft); color: var(--bad); border-color: transparent; font-weight: 700; }
+.chip.warn { background: var(--warn-soft); color: var(--warn); border-color: transparent; }
+.chip.slower { color: var(--new); }
+.chip.faster { color: var(--good); }
+.step-body { padding: 0 14px 14px; display: grid; gap: 14px; min-width: 0; }
+.code { background: var(--bg); border-radius: 8px; padding: 8px 12px; font-size: 0.8rem; overflow-x: auto; margin: 0; white-space: pre; }
+.sub { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.diff { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; }
+.diff table { border-collapse: collapse; width: 100%; font: 12px/1.45 var(--font-mono); }
+.diff th { position: sticky; top: 0; text-align: left; font: 700 0.72rem var(--font-body); letter-spacing: 0.06em; text-transform: uppercase; padding: 6px 10px; background: var(--surface); border-bottom: 1px solid var(--line); }
+.diff th.old { color: var(--old); }
+.diff th.new { color: var(--new); }
+.diff td { white-space: pre; padding: 0 10px; vertical-align: top; width: 50%; border-right: 1px solid var(--line); }
+.diff td:last-child { border-right: 0; }
+.diff tr.eq td { color: var(--muted); }
+.diff tr.chg td.l, .diff tr.del td.l { background: var(--old-soft); }
+.diff tr.chg td.r, .diff tr.add td.r { background: var(--new-soft); }
+.diff mark.o { background: var(--old-mark); color: inherit; border-radius: 2px; }
+.diff mark.n { background: var(--new-mark); color: inherit; border-radius: 2px; }
+.diff tr.fold td { text-align: center; color: var(--muted); font-family: var(--font-body); font-size: 0.78rem; padding: 3px; background: var(--bg); }
+.diff tr.fold button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; text-decoration: underline; }
+.nums { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; }
+.nums table { border-collapse: collapse; width: 100%; font-size: 0.82rem; }
+.nums th, .nums td { padding: 4px 10px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.nums th { font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); background: var(--surface); }
+.nums td:first-child, .nums th:first-child { text-align: left; font-family: var(--font-mono); font-size: 0.78rem; white-space: normal; overflow-wrap: anywhere; min-width: 16ch; }
+.nums td.o { color: var(--old); }
+.nums td.n { color: var(--new); }
+.nums tr:last-child td { border-bottom: 0; }
+.more { font: inherit; font-size: 0.82rem; background: none; border: 1px solid var(--line); border-radius: 6px; padding: 4px 10px; color: var(--ink); cursor: pointer; justify-self: start; }
+.note { font-size: 0.88rem; color: var(--muted); max-width: 80ch; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.cols > div { min-width: 0; }
+.cols ul { margin: 4px 0 0; padding-left: 1.1em; font-size: 0.84rem; }
+.cols li { overflow-wrap: anywhere; }
+.cols .h-old { color: var(--old); font-weight: 700; font-size: 0.8rem; }
+.cols .h-new { color: var(--new); font-weight: 700; font-size: 0.8rem; }
+.plot-card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; display: grid; gap: 10px; }
+.plot-card + .plot-card { margin-top: 10px; }
+.plot-head { display: flex; gap: 8px 12px; align-items: center; flex-wrap: wrap; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-left: auto; }
+.seg button { font: inherit; font-size: 0.8rem; padding: 4px 10px; border: 0; background: var(--surface); color: var(--muted); cursor: pointer; }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--surface); }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: start; }
+.pair figure { margin: 0; display: grid; gap: 4px; min-width: 0; }
+.pair figcaption { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+.pair img, .single img, .single canvas { width: 100%; height: auto; border: 1px solid var(--line); border-radius: 6px; background: #fff; display: block; }
+.single { display: grid; gap: 6px; max-width: 760px; }
+.single .cap { font-size: 0.8rem; color: var(--muted); }
+.method { display: grid; gap: 12px; max-width: 80ch; }
+.method ul { margin: 0; padding-left: 1.2em; display: grid; gap: 6px; }
+footer { padding-block: 24px 48px; color: var(--muted); font-size: 0.82rem; }
+@media (max-width: 720px) {
+  .prov, .pair, .cols { grid-template-columns: 1fr; }
+  .finding { grid-template-columns: 1fr; gap: 6px; }
+  .finding .kind { justify-self: start; }
+  .chips { margin-left: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  details.step > summary::before { transition: none; }
+}
+.kind.sev0, .kind.sev1 { background: var(--bad-soft); color: var(--bad); border-color: transparent; }
+.kind.sev2 { background: var(--new-soft); color: var(--new); border-color: transparent; }
+.kind.sev3 { background: var(--old-soft); color: var(--old); border-color: transparent; }
+.kind.sev4 { background: var(--good-soft); color: var(--good); border-color: transparent; }
+.counts { display: flex; flex-wrap: wrap; gap: 8px; }
+.dtable td:nth-child(n+3) { text-align: left; white-space: normal; overflow-wrap: anywhere; }
+.dtable td:first-child { white-space: nowrap; font-family: var(--font-body); }
+.chip.unstable { background: var(--bad-soft); color: var(--bad); border-color: transparent; font-weight: 700; }
+.notrun { font-size: 0.86rem; }
+.notrun li { margin-top: 4px; }
+body { margin: 0; }
+</style>
+</head>
+<body>
+
+<header class="wrap masthead">
+  <div class="eyebrow" id="eyebrow">Upgrade dossier</div>
+  <h1>What changes for a <span class="v-old">__PKG__ __BASE_VERSION__</span> user who upgrades to <span class="v-new">__CAND_VERSION__</span></h1>
+  <p class="lede">Code users learned from __PKG__ __BASE_VERSION__, run unchanged under __BASE_VERSION__ and under __CAND_VERSION__, on the same data with the same seed on the same machine. Each section shows what the user sees: how long it takes, what is printed, which numbers move and what the plots look like. Every difference carries a mechanical label; whether it is intended is for the reader to judge.</p>
+  <div class="prov" id="prov"></div>
+  <p class="shared" id="shared"></p>
+</header>
+
+<nav class="jump" aria-label="Sections">
+  <div class="wrap" id="jump">
+    <a href="#findings">Findings</a>
+    <a href="#differences">Differences</a>
+  </div>
+</nav>
+
+<main>
+  <section class="wrap" id="findings">
+    <div class="sec-head">
+      <div class="eyebrow">Across the scenarios</div>
+      <h2>Findings</h2>
+    </div>
+    <div class="findings" id="finding-list"></div>
+  </section>
+  <section class="wrap scenario" id="differences">
+    <div class="sec-head">
+      <div class="eyebrow">Labelled mechanically</div>
+      <h2>Differences</h2>
+    </div>
+    <div class="block" id="diff-body"></div>
+  </section>
+  <div id="scenarios"></div>
+  <section class="wrap scenario" id="method">
+    <div class="sec-head">
+      <div class="eyebrow">How this was made</div>
+      <h2>Method and caveats</h2>
+    </div>
+    <div class="method" id="method-body"></div>
+  </section>
+</main>
+<footer class="wrap" id="foot"></footer>
+
+<script src="data.js"></script>
+<script src="notes.js"></script>
+<script>
+// Everything on this page is generated from data.js except the findings, the scenario
+// takeaways and the extra method notes, which come from notes.js (written by hand).
+const D = window.DOSSIER;
+const NOTES = Object.assign({findings: [], scenarios: {}, method: []}, window.NOTES || {});
+const BL = D.meta.labels.base, CL = D.meta.labels.cand, PKG = D.meta.pkg;
+const $ = (sel, root = document) => root.querySelector(sel);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;"}[c]));
+const fmtSec = s => s == null || isNaN(s) ? "–" : s < 0.1 ? Math.round(s * 1000) + " ms" : s < 10 ? s.toFixed(2) + " s" : s.toFixed(1) + " s";
+const fmtNum = v => {
+  if (v == null || (typeof v === "number" && isNaN(v))) return "NA";
+  if (typeof v !== "number") return String(v);
+  const a = Math.abs(v);
+  if (a !== 0 && (a < 1e-3 || a >= 1e6)) return v.toExponential(3);
+  return Number(v.toPrecision(5)).toString();
+};
+const fmtRel = (a, b) => {
+  if (a == null || b == null) return a == null && b == null ? "" : (a == null ? "was NA" : "now NA");
+  if (a === 0) return b === 0 ? "0%" : "from 0";
+  const r = (b - a) / Math.abs(a) * 100;
+  return (r > 0 ? "+" : "") + (Math.abs(r) < 0.1 ? r.toFixed(3) : r.toFixed(1)) + "%";
+};
+const ratioTxt = r => r == null || !isFinite(r) ? "–" : "×" + (r >= 1 ? r.toFixed(r >= 10 ? 0 : 1) : r.toFixed(2));
+// runs that went at the same time, or came from different calls, give no timing verdict
+const timingUnlabelled = () => !!(window.DOSSIER?.meta?.parallel_runs || window.DOSSIER?.meta?.mixed_calls);
+const ratioCls = r => r == null || !isFinite(r) || timingUnlabelled() ? "" : r >= 1.25 ? "slower" : r <= 0.8 ? "faster" : "";
+function h(tag, attrs = {}, html = "") {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (v == null || v === false) continue;
+    if (k === "class") e.className = v; else e.setAttribute(k, v === true ? "" : v);
+  }
+  if (html) e.innerHTML = html;
+  return e;
+}
+const arr = x => x == null ? [] : Array.isArray(x) ? x : [x];
+const fmtShare = x => x == null ? "?" : x > 0 && x < 0.0001 ? "<0.01%" : (100 * x).toFixed(2) + "%";
+const KINDS = {unstable: 0, error_new: 1, field_removed: 1, export_removed: 1, argument_removed: 1,
+  argument_new_required: 1, condition_class_changed: 2, value_moved: 2, warning_new: 2,
+  arguments_reordered: 2, default_changed: 2, output_changed: 3, plot_changed: 3, slower: 3, faster: 3,
+  warning_gone: 4, field_added: 4, error_fixed: 4, argument_added: 4, export_added: 4};
+const kindBadge = k => `<span class="kind sev${KINDS[k] ?? 4}">${esc(k.replace(/_/g, " "))}</span>`;
+
+function renderProvenance() {
+  const o = D.meta.base, n = D.meta.cand, pv = D.meta.provenance || {};
+  const pb = pv.base || {}, pc = pv.cand || {};
+  const row = (k, v) => v ? `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>` : "";
+  $("#prov").innerHTML = `
+    <div class="old"><div class="eyebrow">Baseline</div><div class="tag v-old">${esc(PKG)} ${esc(BL)}</div>
+      <dl>${row("Source", pb.source)}${row("Packaged", pb.packaged || o.pkg_packaged)}${row("Published", pb.publication)}
+      ${row("Repository", pb.repository)}${row("sha256", pb.sha256)}${row("Commit", pb.commit)}${row("Code", pb.tag_check)}</dl></div>
+    <div class="new"><div class="eyebrow">Candidate</div><div class="tag v-new">${esc(PKG)} ${esc(CL)}</div>
+      <dl>${row("Source", pc.source)}${row("Packaged", pc.packaged || n.pkg_packaged)}${row("Published", pc.publication)}
+      ${row("sha256", pc.sha256)}${row("Commit", pc.commit)}${row("Code", pc.commits_since_tag)}</dl></div>`;
+  const pk = o.packages || {};
+  const deps = Object.entries(pk).filter(([, v]) => v).slice(0, 8).map(([k, v]) => `${k} ${v}`).join(", ");
+  const runs = arr(D.meta.runs_base).concat(arr(D.meta.runs_cand)).sort();
+  $("#shared").textContent = `Shared for both: ${o.r_version}${deps ? ", " + deps : ""}; ${o.machine}, ${o.cores} cores. ` +
+    `Each version ran ${D.meta.determinism_checked ? "twice, in the order baseline, candidate, candidate, baseline," : "once"} with ${D.meta.reps} timed repeats per timed step; runs started ${runs[0] || ""} to ${runs[runs.length - 1] || ""}.`;
+  $("#eyebrow").textContent = `Upgrade dossier · ${D.scenarios.length} scenario${D.scenarios.length === 1 ? "" : "s"}`;
+}
+
+function renderFindings() {
+  const list = $("#finding-list");
+  if (!NOTES.findings.length) { list.innerHTML = `<p class="note">No findings written yet. The labelled differences below are the evidence to read; findings go in notes.js.</p>`; return; }
+  for (const f of NOTES.findings) {
+    list.append(h("div", {class: "finding"}, `
+      <span class="kind ${esc(f.kind)}">${esc(f.kind)}</span>
+      <div><div class="what">${f.what}</div><div class="why">${f.why}</div>
+      ${f.see ? `<div class="see"><a href="#${esc(f.see)}">See the evidence</a></div>` : ""}</div>`));
+  }
+}
+
+function renderDifferences() {
+  const box = $("#diff-body");
+  const rows = arr(D.differences);
+  if (!rows.length) { box.append(h("p", {class: "note"}, "No differences: every compared step gave the same results under both versions.")); return; }
+  const counts = {};
+  rows.forEach(r => counts[r.kind] = (counts[r.kind] || 0) + 1);
+  box.append(h("div", {class: "counts"}, Object.keys(KINDS).filter(k => counts[k]).map(k =>
+    `<div class="stat"><b>${counts[k]}</b><span>${kindBadge(k)}</span></div>`).join("")));
+  const shown = 40;
+  // one row per distinct change: the same change in several steps is listed once
+  const grouped = arr(D.differences_grouped).length ? arr(D.differences_grouped) : rows;
+  if (grouped.length < rows.length) box.append(h("p", {class: "note"},
+    `${rows.length} differences, ${grouped.length} distinct: a change found in several steps (a new field in every model object, say) is listed once, with the steps it is in.`));
+  const tbl = h("div", {class: "nums dtable"});
+  const draw = all => {
+    let t = `<table><thead><tr><th>Kind</th><th>Step</th><th>Where</th><th>${esc(BL)}</th><th>${esc(CL)}</th></tr></thead><tbody>`;
+    for (const r of (all ? grouped : grouped.slice(0, shown))) {
+      const anchor = `${r.scenario}-${r.step}`;
+      const more = r.steps > 1 ? `<br><span class="note" title="${esc(r.where)}">and in ${r.steps - 1} more step${r.steps > 2 ? "s" : ""}</span>` : "";
+      const where = r.scenario === "(namespace)" ? `<code>${esc(r.label)}()</code> <span class="note">signature</span>` :
+        `<a href="#${esc(anchor)}">${esc(r.scenario)} / ${esc(r.label)}</a>${more}`;
+      t += `<tr><td>${kindBadge(r.kind)}</td><td>${where}</td>` +
+        `<td><code>${esc(r.path ?? "")}</code>${r.detail ? `<br><span class="note">${esc(r.detail)}</span>` : ""}` +
+        `${r.no_news === true ? ` <span class="chip warn" title="No NEWS bullet after the baseline names a function this step uses">no NEWS</span>` : ""}` +
+        `${r.accepted === true ? ` <span class="chip" title="${esc(r.accepted_reason || "accepted")}">accepted</span>` : ""}</td>` +
+        `<td class="o">${esc(r.base ?? "")}</td><td class="n">${esc(r.cand ?? "")}</td></tr>`;
+    }
+    tbl.innerHTML = t + `</tbody></table>`;
+  };
+  draw(false);
+  box.append(tbl);
+  if (grouped.length > shown) {
+    const b = h("button", {class: "more", type: "button"}, `Show all ${grouped.length}`);
+    b.addEventListener("click", () => { draw(true); b.remove(); });
+    box.append(b);
+  }
+}
+
+function renderCoverage() {
+  const cv = D.meta.coverage;
+  if (!cv || !cv.exported) return;
+  const box = $("#diff-body");
+  const unused = arr(cv.unused), used = arr(cv.used), um = arr(cv.news_unmatched);
+  box.append(h("div", {class: "sub"}, "What the scenarios exercise"));
+  box.append(h("p", {class: "note"}, `The scenarios use ${used.length} of ${cv.exported} exported functions` +
+    (unused.length ? `; not used: ${unused.map(f => `<code>${esc(f)}</code>`).join(", ")}.` : ".") +
+    " A change in a function no scenario uses cannot show up here, except as a change to its signature."));
+  if (um.length) {
+    box.append(h("p", {class: "note"}, `${um.length} NEWS bullet${um.length > 1 ? "s" : ""} after ${esc(BL)} match${um.length > 1 ? "" : "es"} no step or signature change; the scenarios may not exercise ${um.length > 1 ? "these changes" : "this change"}:`));
+    box.append(h("ul", {}, um.map(b => `<li>${esc(b).replace(/`([^`]+)`/g, "<code>$1</code>")}</li>`).join("")));
+  }
+}
+
+const newWarnings = st => arr(st.warnings?.cand).filter(w => !arr(st.warnings?.base).includes(w));
+const goneWarnings = st => arr(st.warnings?.base).filter(w => !arr(st.warnings?.cand).includes(w));
+const isTimed = st => st.time?.base && !st.time.base.single;
+const hasPlot = st => st.plot && (arr(st.plot.base).length || arr(st.plot.cand).length);
+
+function scoreScenario(sc) {
+  const steps = sc.steps;
+  const prints = steps.filter(s => s.printed_diff);
+  const plots = steps.filter(hasPlot);
+  const timed = steps.filter(isTimed);
+  const sum = (xs, f) => xs.reduce((a, x) => a + (f(x) || 0), 0);
+  return {
+    n: steps.length,
+    errBase: steps.filter(s => s.error?.base).length,
+    errCand: steps.filter(s => s.error?.cand).length,
+    prints: prints.length,
+    printsChanged: prints.filter(s => !s.printed_same).length,
+    numsCompared: sum(steps, s => s.values?.n_compared),
+    numsChanged: sum(steps, s => s.values?.n_changed),
+    plots: plots.length,
+    plotsChanged: plots.filter(s => s.plot?.changed).length,
+    newWarn: sum(steps, s => newWarnings(s).length),
+    goneWarn: sum(steps, s => goneWarnings(s).length),
+    tBase: sum(timed, s => s.time.base.elapsed),
+    tCand: sum(timed, s => s.time.cand?.elapsed)
+  };
+}
+
+function timingChart(sc) {
+  // Steps under 30 ms in both versions sit at the timer's resolution (about 10 ms on
+  // Windows); they stay in the table but not on the log axis.
+  const rows = sc.steps.filter(isTimed).filter(s => s.time.cand && Math.max(s.time.base.elapsed, s.time.cand.elapsed) >= 0.03);
+  if (!rows.length) return h("p", {class: "note"}, "No timed step took 30 ms or more.");
+  const W = 760, left = 250, right = 64, top = 26, rowH = 26;
+  const H = top + rows.length * rowH + 8;
+  const vals = rows.flatMap(s => [s.time.base.elapsed, s.time.cand.elapsed]).filter(v => v > 0);
+  const lo = Math.pow(10, Math.floor(Math.log10(Math.max(1e-3, Math.min(...vals)))));
+  const hi = Math.max(lo * 10, Math.pow(10, Math.ceil(Math.log10(Math.max(...vals)))));
+  const x = v => left + (Math.log10(Math.max(v, lo)) - Math.log10(lo)) / (Math.log10(hi) - Math.log10(lo)) * (W - left - right);
+  let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Median elapsed time per step, ${esc(BL)} and ${esc(CL)}, log scale">`;
+  for (let d = lo; d <= hi * 1.0001; d *= 10) {
+    for (const m of [1, 3]) {
+      const v = d * m; if (v > hi * 1.0001) continue;
+      svg += `<line class="grid" x1="${x(v)}" x2="${x(v)}" y1="${top - 8}" y2="${H - 6}"/>`;
+      svg += `<text class="tick" x="${x(v)}" y="${top - 12}" text-anchor="middle">${fmtSec(v)}</text>`;
+    }
+  }
+  rows.forEach((s, i) => {
+    const y = top + i * rowH + rowH / 2;
+    const a = s.time.base.elapsed, b = s.time.cand.elapsed, r = b / a;
+    svg += `<text class="lbl" x="8" y="${y + 4}">${esc(s.label.length > 38 ? s.label.slice(0, 37) + "…" : s.label)}</text>`;
+    svg += `<line class="bar" x1="${x(a)}" x2="${x(b)}" y1="${y}" y2="${y}"/>`;
+    svg += `<circle class="dot-old" cx="${x(a)}" cy="${y}" r="5"><title>${esc(BL)}: ${fmtSec(a)}</title></circle>`;
+    svg += `<circle class="dot-new" cx="${x(b)}" cy="${y}" r="5"><title>${esc(CL)}: ${fmtSec(b)}</title></circle>`;
+    svg += `<text class="ratio ${ratioCls(r)}" x="${W - 8}" y="${y + 4}" text-anchor="end">${ratioTxt(r)}</text>`;
+  });
+  svg += `</svg>`;
+  const box = h("div", {class: "chart"}, svg);
+  box.append(h("div", {class: "legend"}, `<span><i style="background:var(--old)"></i>${esc(BL)} median</span><span><i style="background:var(--new)"></i>${esc(CL)} median</span><span>log scale; ratio = ${esc(CL)} / ${esc(BL)}; steps under 30 ms in both versions are in the table only</span>`));
+  return box;
+}
+
+function timingTable(sc) {
+  const rows = sc.steps.filter(s => s.time?.base);
+  let t = `<table><thead><tr><th>Step</th><th>${esc(BL)} elapsed</th><th>${esc(CL)} elapsed</th><th>ratio</th><th>${esc(BL)} CPU</th><th>${esc(CL)} CPU</th><th>timings</th></tr></thead><tbody>`;
+  for (const s of rows) {
+    const a = s.time.base, b = s.time.cand || {};
+    t += `<tr><td>${esc(s.label)}</td><td class="o">${fmtSec(a.elapsed)}</td><td class="n">${fmtSec(b.elapsed)}</td><td>${ratioTxt(b.elapsed / a.elapsed)}</td><td class="o">${fmtSec(a.cpu)}</td><td class="n">${fmtSec(b.cpu)}</td><td>${a.n}${a.single ? " runs" : ""}</td></tr>`;
+  }
+  return h("div", {class: "nums"}, t + `</tbody></table>`);
+}
+
+function charDiff(l, r) {
+  let p = 0; while (p < l.length && p < r.length && l[p] === r[p]) p++;
+  let s = 0; while (s < l.length - p && s < r.length - p && l[l.length - 1 - s] === r[r.length - 1 - s]) s++;
+  const L = esc(l.slice(0, p)) + (l.length - s > p ? `<mark class="o">${esc(l.slice(p, l.length - s))}</mark>` : "") + esc(l.slice(l.length - s));
+  const R = esc(r.slice(0, p)) + (r.length - s > p ? `<mark class="n">${esc(r.slice(p, r.length - s))}</mark>` : "") + esc(r.slice(r.length - s));
+  return [L, R];
+}
+function rowEl([op, l, r]) {
+  const cls = {"=": "eq", "~": "chg", "-": "del", "+": "add"}[op];
+  let L = esc(l), R = esc(r);
+  if (op === "~") [L, R] = charDiff(l, r);
+  return h("tr", {class: cls}, `<td class="l">${L}</td><td class="r">${R}</td>`);
+}
+function diffTable(rows) {
+  const wrap = h("div", {class: "diff"});
+  const table = h("table");
+  table.innerHTML = `<thead><tr><th class="old">${esc(BL)}</th><th class="new">${esc(CL)}</th></tr></thead>`;
+  const tb = h("tbody");
+  const ctx = 2;
+  const isEq = rows.map(r => r[0] === "=");
+  const keep = rows.map((r, i) => {
+    if (!isEq[i]) return true;
+    for (let k = Math.max(0, i - ctx); k <= Math.min(rows.length - 1, i + ctx); k++) if (!isEq[k]) return true;
+    return false;
+  });
+  let i = 0;
+  while (i < rows.length) {
+    if (!keep[i]) {
+      let j = i; while (j < rows.length && !keep[j]) j++;
+      const hidden = rows.slice(i, j);
+      if (hidden.length <= 3) { hidden.forEach(r => tb.append(rowEl(r))); }
+      else {
+        const tr = h("tr", {class: "fold"});
+        const td = h("td", {colspan: "2"});
+        const btn = h("button", {type: "button"}, `${hidden.length} unchanged lines`);
+        btn.addEventListener("click", () => { const frag = document.createDocumentFragment(); hidden.forEach(r => frag.append(rowEl(r))); tr.replaceWith(frag); });
+        td.append(btn); tr.append(td); tb.append(tr);
+      }
+      i = j; continue;
+    }
+    tb.append(rowEl(rows[i])); i++;
+  }
+  table.append(tb); wrap.append(table);
+  return wrap;
+}
+const pairRows = (a, b) => {
+  const A = arr(a), B = arr(b), n = Math.max(A.length, B.length), out = [];
+  for (let i = 0; i < n; i++) {
+    const l = A[i] ?? "", r = B[i] ?? "";
+    out.push([l === r ? "=" : (l && r ? "~" : (l ? "-" : "+")), l, r]);
+  }
+  return out;
+};
+
+function numbersBlock(v) {
+  const box = h("div", {class: "block"});
+  const shown = 14;
+  const rows = arr(v.changed);
+  if (rows.length) {
+    const tbl = h("div", {class: "nums"});
+    const draw = all => {
+      let t = `<table><thead><tr><th>Quantity (path in the value)</th><th>${esc(BL)}</th><th>${esc(CL)}</th><th>change</th></tr></thead><tbody>`;
+      for (const [p, a, b] of (all ? rows : rows.slice(0, shown))) t += `<tr><td>${esc(p)}</td><td class="o">${fmtNum(a)}</td><td class="n">${fmtNum(b)}</td><td>${fmtRel(a, b)}</td></tr>`;
+      tbl.innerHTML = t + `</tbody></table>`;
+    };
+    draw(false);
+    box.append(h("div", {class: "sub"}, `Numbers that changed: ${rows.length} of ${v.n_compared} compared`));
+    box.append(tbl);
+    if (rows.length > shown) {
+      const b = h("button", {class: "more", type: "button"}, `Show all ${rows.length}`);
+      b.addEventListener("click", () => { draw(true); b.remove(); });
+      box.append(b);
+    }
+  } else if (v.n_compared) {
+    box.append(h("div", {class: "sub"}, `All ${v.n_compared} compared numbers are unchanged`));
+  }
+  if (v.n_tiny) box.append(h("p", {class: "note"}, `${v.n_tiny} more differ by less than the tolerance (largest ${(v.tiny_max_rel * 100).toPrecision(2)}%), counted as unchanged.`));
+  const tc = arr(v.text_changed);
+  if (tc.length) {
+    let t = `<table><thead><tr><th>Text field</th><th>${esc(BL)}</th><th>${esc(CL)}</th></tr></thead><tbody>`;
+    for (const [p, a, b] of tc) t += `<tr><td>${esc(p)}</td><td class="o" style="text-align:left;white-space:normal">${esc(a)}</td><td class="n" style="text-align:left;white-space:normal">${esc(b)}</td></tr>`;
+    box.append(h("div", {class: "sub"}, "Text fields that changed"));
+    box.append(h("div", {class: "nums"}, t + `</tbody></table>`));
+  }
+  const o = arr(v.only_base), n = arr(v.only_cand);
+  if (o.length || n.length) {
+    const li = xs => xs.slice(0, 40).map(([p, val, txt]) => `<li><code>${esc(p)}</code> ${txt != null ? "“" + esc(txt) + "”" : fmtNum(val)}</li>`).join("") + (xs.length > 40 ? `<li>… ${xs.length - 40} more</li>` : "");
+    box.append(h("div", {class: "cols"}, `<div><div class="h-old">Only in ${esc(BL)} (${o.length})</div><ul>${li(o) || "<li>none</li>"}</ul></div><div><div class="h-new">Only in ${esc(CL)} (${n.length})</div><ul>${li(n) || "<li>none</li>"}</ul></div>`));
+  }
+  return box;
+}
+
+function stepChips(st) {
+  const c = [];
+  if (st.status === "unstable") c.push(`<span class="chip unstable">differs between runs</span>`);
+  if (st.error?.base) c.push(`<span class="chip error">error in ${esc(BL)}</span>`);
+  if (st.error?.cand) c.push(`<span class="chip error">error in ${esc(CL)}</span>`);
+  if (st.printed_diff) c.push(st.printed_same ? `<span class="chip">output unchanged</span>` :
+    st.printed_digits_only ? `<span class="chip">printed digits within tolerance</span>` : `<span class="chip changed">output changed</span>`);
+  if (st.transcript_diff) c.push(st.transcript_digits_only ? `<span class="chip">console digits within tolerance</span>` : `<span class="chip changed">console changed</span>`);
+  if (st.values?.n_changed) c.push(`<span class="chip changed">${st.values.n_changed} numbers changed</span>`);
+  const nf = arr(st.struct?.only_base).length; if (nf) c.push(`<span class="chip error">${nf} element${nf > 1 ? "s" : ""} removed</span>`);
+  const na = arr(st.struct?.only_cand).length; if (na) c.push(`<span class="chip">${na} element${na > 1 ? "s" : ""} added</span>`);
+  const nw = newWarnings(st).length; if (nw) c.push(`<span class="chip warn">${nw} new warning${nw > 1 ? "s" : ""}</span>`);
+  const gw = goneWarnings(st).length; if (gw) c.push(`<span class="chip">${gw} warning${gw > 1 ? "s" : ""} gone</span>`);
+  if (st.time?.cand && st.time?.base) {
+    const r = st.time.cand.elapsed / st.time.base.elapsed;
+    if (st.time.base.elapsed > 0.02 || st.time.cand.elapsed > 0.02) c.push(`<span class="chip ${ratioCls(r)}">${fmtSec(st.time.base.elapsed)} → ${fmtSec(st.time.cand.elapsed)}</span>`);
+  }
+  return c.join("");
+}
+function stepBlock(sc, st) {
+  const d = h("details", {class: "step", id: `${sc.id}-${st.id}`});
+  d.append(h("summary", {}, `<span class="step-label">${esc(st.label)}</span><span class="chips">${stepChips(st)}</span>`));
+  const body = h("div", {class: "step-body"});
+  body.append(h("pre", {class: "code"}, esc(st.code)));
+  if (arr(st.kinds).length) body.append(h("div", {class: "counts"}, arr(st.kinds).map(kindBadge).join("")));
+  if (arr(st.kinds).length && D.meta.news?.file) {
+    const nb = arr(st.news);
+    body.append(h("div", {class: "sub"}, `NEWS candidates (${esc(D.meta.news.file)}, after ${esc(BL)})`));
+    body.append(nb.length
+      ? h("ul", {}, nb.slice(0, 5).map(b => `<li>${esc(b).replace(/`([^`]+)`/g, "<code>$1</code>")}</li>`).join("") +
+          (nb.length > 5 ? `<li class="note">and ${nb.length - 5} more bullets naming a function this step uses</li>` : ""))
+      : h("p", {class: "note"}, `No NEWS bullet names a function this step uses${arr(st.news_functions).length ? ` (${arr(st.news_functions).map(f => `<code>${esc(f)}</code>`).join(", ")})` : ""}.`));
+  }
+  if (st.status === "unstable") body.append(h("p", {class: "note"}, "The two runs of one version gave different results for this step (unseeded randomness, a clock, a temporary path), so it is not compared further. The first run of each version is shown."));
+  if (st.error?.base || st.error?.cand) {
+    body.append(h("div", {class: "sub"}, "Errors"));
+    const cls = side => arr(st.error_class?.[side]).length ? ` [${arr(st.error_class[side]).join("/")}]` : "";
+    body.append(diffTable(pairRows(st.error.base ? [st.error.base + cls("base")] : [], st.error.cand ? [st.error.cand + cls("cand")] : [])));
+  }
+  const tb = arr(st.transcript?.base), tc = arr(st.transcript?.cand);
+  if (tb.length || tc.length) {
+    body.append(h("div", {class: "sub"}, st.transcript_diff ? "Console output and messages" : "Console output and messages (identical)"));
+    body.append(diffTable(st.transcript_diff || pairRows(tb, tc)));
+  }
+  const wb = arr(st.warnings?.base), wc = arr(st.warnings?.cand);
+  if (wb.length || wc.length) {
+    body.append(h("div", {class: "sub"}, "Warnings"));
+    body.append(diffTable(pairRows(wb, wc)));
+  }
+  if (st.printed_diff) {
+    body.append(h("div", {class: "sub"}, st.printed_same ? "Printed value (identical)" : "Printed value"));
+    body.append(diffTable(st.printed_diff));
+  }
+  if (st.values) body.append(numbersBlock(st.values));
+  if (st.struct && (arr(st.struct.only_base).length || arr(st.struct.only_cand).length)) {
+    const li = xs => arr(xs).map(p => `<li><code>${esc(p)}</code></li>`).join("") || "<li>none</li>";
+    body.append(h("div", {class: "sub"}, "Elements of the value (what code reading x$… relies on)"));
+    body.append(h("div", {class: "cols"}, `<div><div class="h-old">Only in ${esc(BL)}</div><ul>${li(st.struct.only_base)}</ul></div><div><div class="h-new">Only in ${esc(CL)}</div><ul>${li(st.struct.only_cand)}</ul></div>`));
+  }
+  const cap = arr(st.capped?.base);
+  if (cap.length) body.append(h("p", {class: "note"}, `Not walked because of the size caps: ${cap.map(esc).join("; ")}.`));
+  if (hasPlot(st)) body.append(h("p", {class: "note"}, `This step draws a plot: <a href="#${esc(sc.id)}-${esc(st.id)}-plot">see it below</a>.`));
+  d.append(body);
+  return d;
+}
+
+function plotCard(sc, st) {
+  const p = st.plot || {};
+  const card = h("div", {class: "plot-card", id: st.kind === "plot" ? `${sc.id}-${st.id}` : `${sc.id}-${st.id}-plot`});
+  const head = h("div", {class: "plot-head"});
+  const status = st.error?.cand || st.error?.base ? `<span class="chip error">error</span>` :
+    st.status === "unstable" ? `<span class="chip unstable">differs between runs</span>` :
+    p.changed ? `<span class="chip changed">drawing changed${arr(p.pixel_share).length ? ": " + arr(p.pixel_share).map(fmtShare).join(", ") + " of pixels" : ""}</span>` :
+    p.below_tol ? `<span class="chip">within the plot tolerance (${arr(p.pixel_share).map(fmtShare).join(", ")} of pixels)</span>` : `<span class="chip">identical image</span>`;
+  head.innerHTML = `<span class="step-label">${esc(st.label)}</span>${status}<span class="chip">${esc(p.w)} × ${esc(p.h)} in</span>`;
+  const seg = h("div", {class: "seg", role: "group", "aria-label": "View"});
+  const view = h("div");
+  [["pair", "Side by side"], ["flip", "Flip"], ["diff", "Differences"]].forEach(([m, txt]) => {
+    const b = h("button", {type: "button", "aria-pressed": m === "pair" ? "true" : "false"}, txt);
+    b.addEventListener("click", () => { seg.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b ? "true" : "false")); draw(m); });
+    seg.append(b);
+  });
+  const A = arr(p.base), B = arr(p.cand);
+  if (p.changed && A.length && B.length) head.append(seg);
+  card.append(head, view);
+  const alt = (v, k) => `${st.label}, ${v}${A.length > 1 ? ", page " + (k + 1) : ""}`;
+  function draw(mode) {
+    view.innerHTML = "";
+    if (mode === "pair" || !p.changed) {
+      const n = Math.max(A.length, B.length);
+      for (let k = 0; k < n; k++) {
+        const pr = h("div", {class: "pair"});
+        pr.innerHTML = `<figure><figcaption class="v-old">${esc(BL)}</figcaption>${A[k] ? `<img loading="lazy" src="${esc(A[k])}" alt="${esc(alt(BL, k))}">` : "<p class='note'>no image</p>"}</figure>` +
+          `<figure><figcaption class="v-new">${esc(CL)}</figcaption>${B[k] ? `<img loading="lazy" src="${esc(B[k])}" alt="${esc(alt(CL, k))}">` : "<p class='note'>no image</p>"}</figure>`;
+        view.append(pr);
+      }
+    } else if (mode === "flip") {
+      const box = h("div", {class: "single"});
+      let showCand = true;
+      const img = h("img", {src: B[0], alt: alt(CL, 0)});
+      const cap = h("div", {class: "cap"});
+      const btn = h("button", {class: "more", type: "button"});
+      const upd = () => { img.src = showCand ? B[0] : A[0]; img.alt = alt(showCand ? CL : BL, 0); cap.innerHTML = `Showing <b class="${showCand ? "v-new" : "v-old"}">${esc(showCand ? CL : BL)}</b>. Switch back and forth to see what moves.`; btn.textContent = `Show ${showCand ? BL : CL}`; };
+      btn.addEventListener("click", () => { showCand = !showCand; upd(); });
+      upd(); box.append(btn, img, cap); view.append(box);
+    } else {
+      const box = h("div", {class: "single"});
+      const cv = h("canvas", {"aria-label": `Pixels that differ between ${BL} and ${CL} for ${st.label}`});
+      const cap = h("div", {class: "cap"}, "Comparing pixels…");
+      box.append(cv, cap); view.append(box);
+      const ia = new Image(), ib = new Image(); let loaded = 0;
+      const go = () => {
+        if (++loaded < 2) return;
+        const w = Math.max(ia.naturalWidth, ib.naturalWidth), hgt = Math.max(ia.naturalHeight, ib.naturalHeight);
+        const mk = im => { const c = document.createElement("canvas"); c.width = w; c.height = hgt; const x = c.getContext("2d"); x.fillStyle = "#fff"; x.fillRect(0, 0, w, hgt); x.drawImage(im, 0, 0); return x.getImageData(0, 0, w, hgt); };
+        const da = mk(ia), db = mk(ib);
+        cv.width = w; cv.height = hgt;
+        const ctx = cv.getContext("2d"); const out = ctx.createImageData(w, hgt);
+        let diff = 0;
+        for (let i = 0; i < da.data.length; i += 4) {
+          const dd = Math.abs(da.data[i] - db.data[i]) + Math.abs(da.data[i + 1] - db.data[i + 1]) + Math.abs(da.data[i + 2] - db.data[i + 2]);
+          if (dd > 24) { diff++; out.data[i] = 214; out.data[i + 1] = 88; out.data[i + 2] = 20; out.data[i + 3] = 255; }
+          else { const g = 255 - (255 - (db.data[i] + db.data[i + 1] + db.data[i + 2]) / 3) * 0.25; out.data[i] = g; out.data[i + 1] = g; out.data[i + 2] = g; out.data[i + 3] = 255; }
+        }
+        ctx.putImageData(out, 0, 0);
+        cap.textContent = `${(diff / (w * hgt) * 100).toFixed(1)}% of pixels differ (orange); the ${CL} image is shown faintly underneath.`;
+      };
+      ia.onload = go; ib.onload = go; ia.src = A[0]; ib.src = B[0];
+    }
+  }
+  draw("pair");
+  return card;
+}
+
+function renderScenario(sc) {
+  const sec = h("section", {class: "wrap scenario", id: sc.id});
+  const s = scoreScenario(sc);
+  const note = NOTES.scenarios[sc.id] || {};
+  sec.append(h("div", {class: "sec-head"}, `<div class="eyebrow">${esc(sc.source)}</div><h2>${esc(sc.title)}</h2>`));
+  const stat = (big, small, flag) => `<div class="stat${flag ? " flag" : ""}"><b>${big}</b><span>${small}</span></div>`;
+  sec.append(h("div", {class: "scorecard"},
+    stat(`${s.n - s.errCand}/${s.n}`, `steps run in ${esc(CL)}`, s.errCand > s.errBase) +
+    stat(`${s.printsChanged}/${s.prints}`, "printed values changed") +
+    stat(`${s.numsChanged}/${s.numsCompared}`, "numbers changed") +
+    stat(`${s.plotsChanged}/${s.plots}`, "plots changed") +
+    stat(s.newWarn ? `+${s.newWarn}` : "0", `new warnings${s.goneWarn ? `, ${s.goneWarn} gone` : ""}`) +
+    stat(ratioTxt(s.tCand / s.tBase), `time for timed steps (${fmtSec(s.tBase)} → ${fmtSec(s.tCand)})`)));
+  if (note.takeaways?.length) sec.append(h("ul", {class: "takeaways"}, note.takeaways.map(t => `<li>${t}</li>`).join("")));
+  if (arr(sc.notes).length) sec.append(h("p", {class: "note"}, `Caveats: ${arr(sc.notes).map(esc).join("; ")}.`));
+  const tb = h("div", {class: "block"});
+  tb.append(h("h3", {}, `Time <small>median elapsed seconds per timed step</small>`));
+  tb.append(timingChart(sc));
+  const tdet = h("details", {class: "step"});
+  tdet.append(h("summary", {}, `<span class="step-label">All timings, with CPU time</span>`));
+  const tbody = h("div", {class: "step-body"}); tbody.append(timingTable(sc)); tdet.append(tbody);
+  tb.append(tdet);
+  sec.append(tb);
+  const ob = h("div", {class: "block"});
+  ob.append(h("h3", {}, `Calls, output and numbers <small>in order; open a row for the side-by-side view</small>`));
+  sc.steps.filter(x => x.kind !== "plot").forEach(st => ob.append(stepBlock(sc, st)));
+  sec.append(ob);
+  const plots = sc.steps.filter(hasPlot);
+  if (plots.length) {
+    const pb = h("div", {class: "block"});
+    pb.append(h("h3", {}, `Plots <small>drawn to PNG at each step's figure size</small>`));
+    plots.forEach(st => pb.append(plotCard(sc, st)));
+    sec.append(pb);
+  }
+  const nr = arr(sc.not_run);
+  if (nr.length) {
+    const nb = h("div", {class: "block"});
+    nb.append(h("h3", {}, `Not run <small>${nr.length} chunk${nr.length > 1 ? "s" : ""}</small>`));
+    nb.append(h("ul", {class: "notrun"}, nr.map(r => `<li><code>${esc(r.label || r.id)}</code>: ${esc(r.reason)}</li>`).join("")));
+    sec.append(nb);
+  }
+  return sec;
+}
+
+function renderMethod() {
+  const det = arr(D.meta.determinism_failures);
+  const reps = D.meta.reps;
+  const lb = D.meta.load_before || {}, la = D.meta.load_after || {};
+  const items = [
+    `Both versions were installed into their own libraries from source tarballs (byte-compiled, as users get them); each run is a fresh R process that loads ${esc(PKG)} from that library and checks the path.`,
+    `The scenario code is the ${esc(BL)} vignettes' code and the scenario files, run unchanged under both versions, so anything that errors or changes is what a user following the ${esc(BL)} documentation meets after upgrading.`,
+    `${D.meta.base.reseed === "scenario" ? "Every scenario starts from the same seed, and its steps continue that random stream, as in the vignettes." : "Every step starts from the same seed, so a change in one step's random draws does not move later steps."} Console output is captured as one stream (printed text and messages, in order); the printed form of visible values and the warnings are listed separately.`,
+    `Numbers are every numeric value inside a step's visible value and inside the objects it assigns, matched by their path. A relative change under ${D.meta.tol} counts as unchanged; such differences come from optimisers and floating point, not from a change in method.`,
+    reps > 0
+      ? `Timing: median elapsed time over the timed repeats (${reps} per run${D.meta.determinism_checked ? `, two runs per version in the order ${esc(BL)}, ${esc(CL)}, ${esc(CL)}, ${esc(BL)}` : ""}). A step is labelled slower or faster only when each version has at least ${D.meta.min_timings ?? 5} timings, it takes ${D.meta.min_time * 1000} ms or more, all its timings lie on one side of the other version's, and the ratio is beyond ${D.meta.min_ratio}.${D.meta.timing_unlabelled ? ` ${D.meta.timing_unlabelled} timed step${D.meta.timing_unlabelled > 1 ? "s have" : " has"} fewer timings than that and ${D.meta.timing_unlabelled > 1 ? "are" : "is"} not labelled.` : ""}${D.meta.parallel_runs ? ` In this dossier runs went up to ${D.meta.workers} at a time and competed for the machine, so no step is labelled slower or faster.` : D.meta.mixed_calls ? ` In this dossier some runs were reused from an earlier call and others made anew, so the order no longer balances drift in machine load, and no step is labelled slower or faster; making all runs together (force = TRUE) gives labels.` : ""} Elapsed times carry noise from other processes; the CPU column is less affected.`
+      : `Timing: no repeats were timed in this run; the times shown come from the captured runs only and are indicative.`,
+    lb.r_processes != null ? `Machine load: CPU ${lb.cpu_busy}% busy and ${lb.r_processes} other R processes before the runs; ${la.cpu_busy}% and ${la.r_processes} after.` : null,
+    !D.meta.determinism_checked ? `Determinism check: each version ran once, so steps whose results vary between runs could not be found.` :
+      det.length ? `Determinism check: these steps gave different results in the two runs of the same version and are not compared: ${det.map(esc).join("; ")}.` : `Determinism check: both runs of each version gave identical output, numbers, warnings, errors and plots for every step.`,
+    D.meta.plot_pixels
+      ? `Plots are compared by file checksum; when the checksums differ, the share of differing pixels is computed${D.meta.plot_tol > 0 ? `, and images with at most ${fmtShare(D.meta.plot_tol)} of their pixels changed count as the same plot` : ""}. The Differences view on a changed plot shows where the pixels differ.`
+      : `Plots are compared exactly by file checksum. The Differences view on a changed plot computes the share of changed pixels in your browser.`,
+    ...NOTES.method
+  ].filter(Boolean);
+  $("#method-body").innerHTML = `<ul>${items.map(t => `<li>${t}</li>`).join("")}</ul>`;
+}
+
+renderProvenance();
+renderFindings();
+renderDifferences();
+renderCoverage();
+// Scenarios are drawn when they come near the screen, or when a link points into
+// them: a large dossier has thousands of steps and plots.
+const host = $("#scenarios"), jump = $("#jump");
+const where = {}, holders = [];
+D.scenarios.forEach((sc, i) => {
+  where[sc.id] = i;
+  arr(sc.steps).forEach(st => { where[`${sc.id}-${st.id}`] = i; where[`${sc.id}-${st.id}-plot`] = i; });
+});
+function ensure(i) {
+  const ph = holders[i];
+  if (!ph || ph.dataset.done) return;
+  ph.dataset.done = "1";
+  ph.replaceWith(renderScenario(D.scenarios[i]));
+}
+const io = "IntersectionObserver" in window ? new IntersectionObserver(entries => entries.forEach(e => {
+  if (e.isIntersecting) { io.unobserve(e.target); ensure(+e.target.dataset.i); }
+}), {rootMargin: "1200px 0px"}) : null;
+D.scenarios.forEach((sc, i) => {
+  const ph = h("section", {class: "wrap scenario", id: sc.id, "data-i": i});
+  ph.style.minHeight = `${Math.min(6000, 220 + 46 * arr(sc.steps).length)}px`;
+  ph.append(h("div", {class: "sec-head"}, `<div class="eyebrow">${esc(sc.source)}</div><h2>${esc(sc.title)}</h2>`));
+  holders.push(ph);
+  host.append(ph);
+  if (io) io.observe(ph); else ensure(i);
+  jump.append(h("a", {href: `#${sc.id}`}, esc(sc.title.split(":")[0])));
+});
+const showAll = h("a", {href: "#", title: "Draw every scenario, so the browser's find sees all of them"}, "Show all scenarios");
+showAll.addEventListener("click", ev => { ev.preventDefault(); holders.forEach((_, i) => ensure(i)); showAll.remove(); });
+jump.append(h("a", {href: "#method"}, "Method"));
+jump.append(showAll);
+function goTo() {
+  const id = decodeURIComponent(location.hash.slice(1));
+  if (!id || !(id in where)) return;
+  ensure(where[id]);
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (el.tagName === "DETAILS") el.open = true;
+  el.scrollIntoView();
+}
+window.addEventListener("hashchange", goTo);
+goTo();
+renderMethod();
+window.__dossierReady = performance.now();
+$("#foot").textContent = `Generated ${D.meta.compared || ""} by pkgdossier ${D.meta.pkgdossier_version || ""}: ${D.scenarios.length} scenario${D.scenarios.length === 1 ? "" : "s"}, ${PKG} ${BL} against ${CL}.`;
+</script>
+</body>
+</html>

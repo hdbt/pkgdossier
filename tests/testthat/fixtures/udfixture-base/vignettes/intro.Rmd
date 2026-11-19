@@ -1,0 +1,52 @@
+---
+title: "Getting started"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting started with udfixture}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 5, fig.height = 4)
+```
+
+```{r}
+library(udfixture)
+```
+
+Estimates are computed and kept:
+
+```{r estimate}
+est <- estimate()
+```
+
+```{r report}
+report(3)
+```
+
+```{r draw, fig.width = 6}
+draw()
+```
+
+Data shipped next to the vignette:
+
+```{r data}
+tab <- read.csv("values.csv")
+```
+
+An error the vignette shows on purpose:
+
+```{r expected, error = TRUE}
+check_input("a") + 1
+```
+
+This chunk is shown but not run:
+
+```{r later, eval = FALSE}
+old_failure()
+```
+
+```{r conditional, eval = exists("never_defined")}
+stop("this chunk must not run")
+```

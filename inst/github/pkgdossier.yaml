@@ -1,0 +1,90 @@
+# pkgdossier on pull requests: runs the code users learned from the release on CRAN
+# (its vignettes and help-page examples) under that release and under the pull
+# request's code, uploads the HTML report as an artifact, and posts the summary as a
+# comment on the pull request.
+#
+# Copy this file to .github/workflows/pkgdossier.yaml in the package's repository:
+#   file.copy(system.file("github", "pkgdossier.yaml", package = "pkgdossier"),
+#             ".github/workflows/pkgdossier.yaml")
+#
+# The baseline is the current CRAN release. For a package not on CRAN yet, use a git
+# ref instead: check out with `fetch-depth: 0` and set
+#   base = git_ref("candidate", "origin/main")
+#
+# Until pkgdossier is on CRAN, install it with `github::hdbt/pkgdossier` instead of
+# `any::pkgdossier` below.
+#
+# The comment step needs write access to pull requests, which GitHub does not give
+# to workflows started from forks; for those, the report is still uploaded.
+
+name: pkgdossier
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  dossier:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: candidate
+
+      - uses: r-lib/actions/setup-pandoc@v2
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          working-directory: candidate
+          extra-packages: any::pkgdossier, any::ps
+
+      - name: Run the dossier
+        shell: Rscript {0}
+        env:
+          REPORT_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          library(pkgdossier)
+          pkg <- read.dcf("candidate/DESCRIPTION", fields = "Package")[1, 1]
+          # the pull request's checkout against the CRAN release, with the release's
+          # vignettes and help-page examples (the defaults)
+          d <- dossier(pkg, candidate = local_path("candidate"), work = "dossier-work")
+          accepted <- "candidate/dev/dossier/accepted.csv"   # see accept_differences()
+          cmp <- run_dossier(d, html = "dossier-page", timeout = 3600,
+                             accept = if (file.exists(accepted)) accepted)
+          write_dossier_md(cmp, "dossier.md", report_url = Sys.getenv("REPORT_URL"))
+          saveRDS(cmp, "dossier-work/comparison.rds")
+          print(cmp)
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dossier-page
+          path: dossier-page
+          if-no-files-found: ignore
+
+      - name: Comment on the pull request
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: >
+          gh pr comment ${{ github.event.pull_request.number }}
+          --repo ${{ github.repository }}
+          --body-file dossier.md
+          --edit-last --create-if-none
+
+      # Last, so the report and the comment are there either way: fail the check when
+      # severe differences remain that are neither accepted nor named by NEWS.
+      - name: Fail on unexplained severe differences
+        shell: Rscript {0}
+        run: |
+          cmp <- readRDS("dossier-work/comparison.rds")
+          pkgdossier::check_differences(cmp, max_severity = 1, no_news = TRUE)

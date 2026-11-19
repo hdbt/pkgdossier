@@ -1,0 +1,38 @@
+Package: pkgdossier
+Title: Compare What Users Meet Before and After a Package Upgrade
+Version: 0.1.0
+Authors@R:
+    person("Hamid", "Bulut", email = "me@hamidbulut.com", role = c("aut", "cre"))
+Description: Runs the code users learned from a package's released version
+    (its vignettes, help-page examples or scenario scripts) unchanged under
+    that release and under a candidate version, each installed in its own
+    library and run in its own R process, and reports what a user meets
+    after upgrading: new errors and warnings, changed printed output, moved
+    numbers, removed or added object fields, changed plots and changes in
+    run time. Each difference is labelled mechanically; deciding whether it
+    is intended is left to the reader. Results are returned as data, written
+    as JSON and rendered as a standalone HTML report.
+License: MIT + file LICENSE
+URL: https://github.com/hdbt/pkgdossier
+BugReports: https://github.com/hdbt/pkgdossier/issues
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+Depends:
+    R (>= 4.1.0)
+Imports:
+    callr,
+    digest,
+    evaluate (>= 1.0.0),
+    jsonlite,
+    knitr,
+    tools,
+    utils
+Suggests:
+    png,
+    ps,
+    rmarkdown,
+    testthat (>= 3.1.7),
+    withr
+VignetteBuilder: knitr
+Config/testthat/edition: 3
+Config/roxygen2/version: 8.1.1

@@ -1,0 +1,8 @@
+Package: udfixture
+Title: Fixture for pkgdossier Tests
+Version: 1.0.0
+Authors@R: person("Test", "Fixture", role = c("aut", "cre"), email = "fixture@example.org")
+Description: A tiny package in two versions with planted differences, used by the
+    pkgdossier tests.
+License: MIT + file LICENSE
+Encoding: UTF-8

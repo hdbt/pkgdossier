@@ -1,0 +1,4 @@
+export(estimate, report, draw, make_result, extend_result, check_input, old_failure)
+export(warn_new, warn_gone, warn_class, slow, quick, noisy)
+export(progress, noise_print, err_class, label_of)
+S3method(print, ud_report)

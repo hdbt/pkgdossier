@@ -1,0 +1,936 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "pkgdossier/dossier.schema.json",
+  "title": "pkgdossier comparison",
+  "description": "What write_dossier_json() writes: the comparison of a package's baseline and candidate versions. Fields not listed here may be present. Missing values are null.",
+  "type": "object",
+  "required": [
+    "schema",
+    "schema_version",
+    "meta",
+    "differences",
+    "scenarios"
+  ],
+  "properties": {
+    "schema": {
+      "const": "pkgdossier"
+    },
+    "schema_version": {
+      "type": "string"
+    },
+    "meta": {
+      "$ref": "#/$defs/meta"
+    },
+    "differences": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/difference"
+      }
+    },
+    "scenarios": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/scenario"
+      }
+    },
+    "differences_grouped": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/difference_group"
+      }
+    }
+  },
+  "$defs": {
+    "maybe_string": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "maybe_number": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "strings": {
+      "type": "array",
+      "items": {
+        "type": [
+          "string",
+          "null"
+        ]
+      }
+    },
+    "pair": {
+      "type": "object",
+      "required": [
+        "base",
+        "cand"
+      ],
+      "properties": {
+        "base": {},
+        "cand": {}
+      }
+    },
+    "string_pair": {
+      "type": "object",
+      "required": [
+        "base",
+        "cand"
+      ],
+      "properties": {
+        "base": {
+          "$ref": "#/$defs/maybe_string"
+        },
+        "cand": {
+          "$ref": "#/$defs/maybe_string"
+        }
+      }
+    },
+    "strings_pair": {
+      "type": "object",
+      "required": [
+        "base",
+        "cand"
+      ],
+      "properties": {
+        "base": {
+          "$ref": "#/$defs/strings"
+        },
+        "cand": {
+          "$ref": "#/$defs/strings"
+        }
+      }
+    },
+    "run_meta": {
+      "type": "object",
+      "required": [
+        "label",
+        "pkg",
+        "pkg_version",
+        "pkg_path",
+        "r_version",
+        "machine",
+        "seed",
+        "reps",
+        "started"
+      ],
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "pkg": {
+          "type": "string"
+        },
+        "pkg_version": {
+          "type": "string"
+        },
+        "pkg_path": {
+          "type": "string"
+        },
+        "r_version": {
+          "type": "string"
+        },
+        "machine": {
+          "type": "string"
+        },
+        "seed": {
+          "type": "integer"
+        },
+        "reps": {
+          "type": "integer"
+        },
+        "reseed": {
+          "enum": [
+            "step",
+            "scenario"
+          ]
+        },
+        "started": {
+          "type": "string"
+        },
+        "finished": {
+          "type": "string"
+        },
+        "functions": {
+          "$ref": "#/$defs/strings"
+        },
+        "api": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": [
+              "type",
+              "args",
+              "defaults"
+            ],
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "args": {
+                "$ref": "#/$defs/strings"
+              },
+              "defaults": {
+                "$ref": "#/$defs/strings"
+              }
+            }
+          }
+        }
+      }
+    },
+    "version_provenance": {
+      "type": "object",
+      "required": [
+        "role",
+        "source",
+        "type",
+        "identity",
+        "tarball",
+        "sha256",
+        "version",
+        "lib"
+      ],
+      "properties": {
+        "role": {
+          "enum": [
+            "base",
+            "cand"
+          ]
+        },
+        "source": {
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "cran",
+            "tarball",
+            "git",
+            "local"
+          ]
+        },
+        "identity": {
+          "type": "string"
+        },
+        "tarball": {
+          "type": "string"
+        },
+        "sha256": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "packaged": {
+          "$ref": "#/$defs/maybe_string"
+        },
+        "repository": {
+          "$ref": "#/$defs/maybe_string"
+        },
+        "publication": {
+          "$ref": "#/$defs/maybe_string"
+        },
+        "lib": {
+          "type": "string"
+        },
+        "commit": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        }
+      }
+    },
+    "meta": {
+      "type": "object",
+      "required": [
+        "pkg",
+        "labels",
+        "base",
+        "cand",
+        "provenance",
+        "order",
+        "reps",
+        "runs",
+        "determinism_checked",
+        "determinism_failures",
+        "news",
+        "coverage",
+        "tol",
+        "min_time",
+        "min_ratio",
+        "compared",
+        "pkgdossier_version"
+      ],
+      "properties": {
+        "pkg": {
+          "type": "string"
+        },
+        "labels": {
+          "type": "object",
+          "required": [
+            "base",
+            "cand"
+          ],
+          "properties": {
+            "base": {
+              "type": "string"
+            },
+            "cand": {
+              "type": "string"
+            }
+          }
+        },
+        "base": {
+          "$ref": "#/$defs/run_meta"
+        },
+        "cand": {
+          "$ref": "#/$defs/run_meta"
+        },
+        "provenance": {
+          "type": "object",
+          "required": [
+            "base",
+            "cand"
+          ],
+          "properties": {
+            "base": {
+              "$ref": "#/$defs/version_provenance"
+            },
+            "cand": {
+              "$ref": "#/$defs/version_provenance"
+            },
+            "deps": {
+              "type": "object",
+              "required": [
+                "mode"
+              ],
+              "properties": {
+                "mode": {
+                  "enum": [
+                    "shared",
+                    "cran"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "order": {
+          "enum": [
+            "abba",
+            "ab"
+          ]
+        },
+        "reps": {
+          "type": "integer"
+        },
+        "runs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "run",
+              "role",
+              "reused"
+            ],
+            "properties": {
+              "run": {
+                "type": "string"
+              },
+              "role": {
+                "enum": [
+                  "base",
+                  "cand"
+                ]
+              },
+              "reused": {
+                "type": "boolean"
+              },
+              "seconds": {
+                "$ref": "#/$defs/maybe_number"
+              }
+            }
+          }
+        },
+        "determinism_checked": {
+          "type": "boolean"
+        },
+        "determinism_failures": {
+          "$ref": "#/$defs/strings"
+        },
+        "news": {
+          "type": "object",
+          "required": [
+            "file",
+            "note"
+          ],
+          "properties": {
+            "file": {
+              "$ref": "#/$defs/maybe_string"
+            },
+            "note": {
+              "type": "string"
+            },
+            "bullets": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "type": "object",
+                "required": [
+                  "section",
+                  "text"
+                ],
+                "properties": {
+                  "section": {
+                    "$ref": "#/$defs/maybe_string"
+                  },
+                  "text": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "coverage": {
+          "type": "object",
+          "required": [
+            "exported",
+            "used",
+            "unused",
+            "news_unmatched"
+          ],
+          "properties": {
+            "exported": {
+              "type": "integer"
+            },
+            "used": {
+              "$ref": "#/$defs/strings"
+            },
+            "unused": {
+              "$ref": "#/$defs/strings"
+            },
+            "news_unmatched": {
+              "$ref": "#/$defs/strings"
+            }
+          }
+        },
+        "api_checked": {
+          "type": "boolean"
+        },
+        "accept": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "properties": {
+            "source": {
+              "type": "string"
+            },
+            "rules": {
+              "type": "integer"
+            },
+            "unused": {
+              "type": "array"
+            }
+          }
+        },
+        "tol": {
+          "type": "number"
+        },
+        "min_time": {
+          "type": "number"
+        },
+        "min_ratio": {
+          "type": "number"
+        },
+        "plot_tol": {
+          "type": "number"
+        },
+        "plot_pixels": {
+          "type": "boolean"
+        },
+        "compared": {
+          "type": "string"
+        },
+        "pkgdossier_version": {
+          "type": "string"
+        }
+      }
+    },
+    "difference": {
+      "type": "object",
+      "required": [
+        "scenario",
+        "step",
+        "label",
+        "kind",
+        "severity",
+        "path",
+        "base",
+        "cand",
+        "rel_change",
+        "detail",
+        "news",
+        "no_news",
+        "accepted",
+        "accepted_reason"
+      ],
+      "properties": {
+        "scenario": {
+          "type": "string"
+        },
+        "step": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "unstable",
+            "error_new",
+            "field_removed",
+            "export_removed",
+            "argument_removed",
+            "argument_new_required",
+            "condition_class_changed",
+            "value_moved",
+            "warning_new",
+            "arguments_reordered",
+            "default_changed",
+            "output_changed",
+            "plot_changed",
+            "slower",
+            "faster",
+            "warning_gone",
+            "field_added",
+            "error_fixed",
+            "argument_added",
+            "export_added"
+          ]
+        },
+        "severity": {
+          "type": "integer"
+        },
+        "path": {
+          "$ref": "#/$defs/maybe_string"
+        },
+        "base": {
+          "$ref": "#/$defs/maybe_string"
+        },
+        "cand": {
+          "$ref": "#/$defs/maybe_string"
+        },
+        "rel_change": {
+          "$ref": "#/$defs/maybe_number"
+        },
+        "detail": {
+          "$ref": "#/$defs/maybe_string"
+        },
+        "news": {
+          "$ref": "#/$defs/maybe_string"
+        },
+        "no_news": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "accepted": {
+          "type": "boolean"
+        },
+        "accepted_reason": {
+          "$ref": "#/$defs/maybe_string"
+        }
+      }
+    },
+    "timing": {
+      "type": "object",
+      "required": [
+        "elapsed",
+        "cpu",
+        "n",
+        "min",
+        "max",
+        "single"
+      ],
+      "properties": {
+        "elapsed": {
+          "$ref": "#/$defs/maybe_number"
+        },
+        "cpu": {
+          "$ref": "#/$defs/maybe_number"
+        },
+        "n": {
+          "type": "integer"
+        },
+        "min": {
+          "$ref": "#/$defs/maybe_number"
+        },
+        "max": {
+          "$ref": "#/$defs/maybe_number"
+        },
+        "single": {
+          "type": "boolean"
+        }
+      }
+    },
+    "line_diff": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "step": {
+      "type": "object",
+      "required": [
+        "id",
+        "kind",
+        "label",
+        "code",
+        "status",
+        "kinds",
+        "error",
+        "error_class",
+        "warnings",
+        "transcript",
+        "time",
+        "unstable",
+        "news",
+        "news_functions"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "same",
+            "changed",
+            "unstable",
+            "error_new",
+            "error_fixed",
+            "error_both"
+          ]
+        },
+        "kinds": {
+          "$ref": "#/$defs/strings"
+        },
+        "error": {
+          "$ref": "#/$defs/string_pair"
+        },
+        "error_class": {
+          "$ref": "#/$defs/strings_pair"
+        },
+        "warnings": {
+          "$ref": "#/$defs/strings_pair"
+        },
+        "transcript": {
+          "$ref": "#/$defs/strings_pair"
+        },
+        "capped": {
+          "$ref": "#/$defs/strings_pair"
+        },
+        "unstable": {
+          "type": "object",
+          "required": [
+            "base",
+            "cand"
+          ],
+          "properties": {
+            "base": {
+              "type": "boolean"
+            },
+            "cand": {
+              "type": "boolean"
+            }
+          }
+        },
+        "time": {
+          "type": "object",
+          "required": [
+            "base",
+            "cand"
+          ],
+          "properties": {
+            "base": {
+              "$ref": "#/$defs/timing"
+            },
+            "cand": {
+              "$ref": "#/$defs/timing"
+            },
+            "ratio": {
+              "$ref": "#/$defs/maybe_number"
+            },
+            "cpu_ratio": {
+              "$ref": "#/$defs/maybe_number"
+            }
+          }
+        },
+        "transcript_diff": {
+          "$ref": "#/$defs/line_diff"
+        },
+        "printed_diff": {
+          "$ref": "#/$defs/line_diff"
+        },
+        "printed_same": {
+          "type": "boolean"
+        },
+        "transcript_digits_only": {
+          "type": "boolean"
+        },
+        "printed_digits_only": {
+          "type": "boolean"
+        },
+        "values": {
+          "type": "object",
+          "required": [
+            "n_compared",
+            "n_changed",
+            "n_tiny",
+            "changed",
+            "text_changed",
+            "only_base",
+            "only_cand"
+          ],
+          "properties": {
+            "n_compared": {
+              "type": "integer"
+            },
+            "n_changed": {
+              "type": "integer"
+            },
+            "n_tiny": {
+              "type": "integer"
+            },
+            "tiny_max_rel": {
+              "type": "number"
+            },
+            "changed": {
+              "type": "array"
+            },
+            "text_changed": {
+              "type": "array"
+            },
+            "only_base": {
+              "type": "array"
+            },
+            "only_cand": {
+              "type": "array"
+            }
+          }
+        },
+        "struct": {
+          "type": "object",
+          "required": [
+            "only_base",
+            "only_cand"
+          ],
+          "properties": {
+            "only_base": {
+              "$ref": "#/$defs/strings"
+            },
+            "only_cand": {
+              "$ref": "#/$defs/strings"
+            }
+          }
+        },
+        "plot": {
+          "type": "object",
+          "required": [
+            "changed",
+            "base",
+            "cand"
+          ],
+          "properties": {
+            "changed": {
+              "type": "boolean"
+            },
+            "below_tol": {
+              "type": "boolean"
+            },
+            "w": {
+              "type": "number"
+            },
+            "h": {
+              "type": "number"
+            },
+            "pixel_share": {
+              "type": "array",
+              "items": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              }
+            },
+            "base": {
+              "$ref": "#/$defs/strings"
+            },
+            "cand": {
+              "$ref": "#/$defs/strings"
+            }
+          }
+        },
+        "news": {
+          "$ref": "#/$defs/strings"
+        },
+        "news_functions": {
+          "$ref": "#/$defs/strings"
+        }
+      }
+    },
+    "scenario": {
+      "type": "object",
+      "required": [
+        "id",
+        "title",
+        "source",
+        "notes",
+        "not_run",
+        "steps"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "notes": {
+          "$ref": "#/$defs/strings"
+        },
+        "not_run": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "code",
+              "reason"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "code": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/step"
+          }
+        }
+      }
+    },
+    "difference_group": {
+      "type": "object",
+      "required": [
+        "kind",
+        "severity",
+        "path",
+        "base",
+        "cand",
+        "n",
+        "steps",
+        "where",
+        "scenario",
+        "step",
+        "no_news",
+        "accepted"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "unstable",
+            "error_new",
+            "field_removed",
+            "export_removed",
+            "argument_removed",
+            "argument_new_required",
+            "condition_class_changed",
+            "value_moved",
+            "warning_new",
+            "arguments_reordered",
+            "default_changed",
+            "output_changed",
+            "plot_changed",
+            "slower",
+            "faster",
+            "warning_gone",
+            "field_added",
+            "error_fixed",
+            "argument_added",
+            "export_added"
+          ]
+        },
+        "severity": {
+          "type": "integer"
+        },
+        "path": {
+          "$ref": "#/$defs/maybe_string"
+        },
+        "base": {
+          "$ref": "#/$defs/maybe_string"
+        },
+        "cand": {
+          "$ref": "#/$defs/maybe_string"
+        },
+        "n": {
+          "type": "integer"
+        },
+        "steps": {
+          "type": "integer"
+        },
+        "where": {
+          "type": "string"
+        },
+        "scenario": {
+          "type": "string"
+        },
+        "step": {
+          "type": "string"
+        },
+        "news": {
+          "$ref": "#/$defs/maybe_string"
+        },
+        "no_news": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "accepted": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

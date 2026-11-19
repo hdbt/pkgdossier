@@ -1,0 +1,14 @@
+^LICENSE\.md$
+^dev$
+^cran-comments\.md$
+^\.github$
+^.*\.Rproj$
+^\.Rproj\.user$
+^\.gitignore$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^paper$
+^\.claude$
+^CLAUDE\.md$
+^CLAUDE\.local\.md$
