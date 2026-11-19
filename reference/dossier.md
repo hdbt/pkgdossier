@@ -190,7 +190,7 @@ dossier("MAIHDA",
 #>   capture:   width 80, 100 dpi, LANGUAGE en
 #>   collect:   default caps; default skipped classes
 #>   deps:      shared, from the current library paths
-#>   work:      /tmp/Rtmp8XqB8X/dossier-0.3.0
+#>   work:      /tmp/RtmpQwSpJz/dossier-0.3.0
 
 # the whole pipeline, on the small package bundled for examples
 # \donttest{
