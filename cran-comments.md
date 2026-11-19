@@ -6,9 +6,10 @@
 
 ## Test environments
 
-* local Ubuntu 24.04, R 4.6.2
-* win-builder (R-release, R-devel)
-* R-hub (macOS arm64, Linux R-devel)
+* win-builder: R-release (4.6.2) and R-devel (2026-11-17 r90926)
+* GitHub Actions: Ubuntu (R-devel, R-release, R-oldrel-1, R 4.1), macOS (R-release)
+  and Windows (R-release)
+* local Windows 11, R 4.5.1
 
 ## Comments
 
@@ -21,11 +22,12 @@
   unwrapped. Examples that build, install and run packages are in `\donttest{}`:
   they use two small source tarballs bundled in `inst/extdata` (about 1.5 KB each),
   install them into `tempdir()` and use no network. Later examples reuse the
-  installations and runs of earlier ones, so the whole set takes about 20
-  seconds under `R CMD check --as-cran` on Linux and about 1.5 minutes on Windows.
+  installations and runs of earlier ones, so the whole set takes 20 to 30 seconds
+  under `R CMD check --as-cran` on the GitHub Actions runners (Linux, macOS and
+  Windows).
 * The vignette runs a dossier on the same bundled tarballs, installing them into
-  `tempdir()` without network access; it builds in about 11 seconds on Linux and
-  about 25 seconds on Windows.
+  `tempdir()` without network access; it builds in 10 to 20 seconds on the GitHub
+  Actions runners and in about 70 seconds on win-builder.
 * The tests use no network. They build and install two versions of a tiny fixture
   package shipped in `tests/testthat/fixtures/` from source into `tempdir()` and run
   them in sequential child R processes (one at a time, no parallelism). Timing
