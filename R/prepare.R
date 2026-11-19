@@ -429,8 +429,10 @@ download_cran <- function(pkg, version, repo, dest_dir, ask, quiet) {
   stop("Could not download ", file, " from ", repo, ".", call. = FALSE)
 }
 
+# Quoted: a git built on MSYS2 (as on CRAN's Windows machines) expands braces in an
+# unquoted argument, and would receive HEAD^{commit} as HEAD^commit.
 git_commit <- function(repo, ref) {
-  git(repo, "rev-parse", "--verify", paste0(ref, "^{commit}"))[1]
+  git(repo, "rev-parse", "--verify", shQuote(paste0(ref, "^{commit}")))[1]
 }
 
 export_git <- function(repo, ref, subdir, dest) {
