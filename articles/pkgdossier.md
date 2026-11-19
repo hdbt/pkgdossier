@@ -36,7 +36,7 @@ d
 #>   capture:   width 80, 100 dpi, LANGUAGE en
 #>   collect:   default caps; default skipped classes
 #>   deps:      shared, from the current library paths
-#>   work:      /tmp/RtmpRQWuFy/pkgdossier-example
+#>   work:      /tmp/RtmpUsOiPb/pkgdossier-example
 ```
 
 [`run_dossier()`](https://hdbt.github.io/pkgdossier/reference/run_dossier.md)

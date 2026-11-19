@@ -159,13 +159,13 @@ cmp <- run_dossier(example_dossier(), html = file.path(tempdir(), "dossier-page"
 #> base udfixture 1.0.0  sha256 fd0de4ff9fef  packaged 2026-11-06 15:33:45 UTC; root
 #> cand udfixture 1.1.0  sha256 0eaefa1ba295  packaged 2026-11-06 15:33:45 UTC; root
 #> Running 3 scenario(s), 30 steps, under udfixture 1.0.0 and 1.1.0 in 4 runs (abba), 3 timed repeats per timed step; a step's run stops after 300 s (step_timeout)
-#> Machine before: CPU 1% busy, 0 other R processes
+#> Machine before: CPU 0% busy, 0 other R processes
 #> [1/4] base_a: up to date, reused
 #> [2/4] cand_a: up to date, reused
 #> [3/4] cand_b: up to date, reused
 #> [4/4] base_b: up to date, reused
-#> Report: /tmp/RtmpQwSpJz/dossier-page/dossier.html
-#> JSON:   /tmp/RtmpQwSpJz/pkgdossier-example/dossier.json
+#> Report: /tmp/RtmpFl7ulk/dossier-page/dossier.html
+#> JSON:   /tmp/RtmpFl7ulk/pkgdossier-example/dossier.json
 cmp
 #> <pkgdossier comparison> udfixture 1.0.0 -> 1.1.0
 #> 3 scenario(s), 28 step(s) compared, 2 not run; abba runs, 3 timed repeats per timed step
