@@ -100,7 +100,7 @@ dossier("ggplot2", base = installed_version(), candidate = cran_release())
 #>   capture:   width 80, 100 dpi, LANGUAGE en
 #>   collect:   default caps; default skipped classes
 #>   deps:      shared, from the current library paths
-#>   work:      /tmp/RtmpFl7ulk/pkgdossier-ggplot2
+#>   work:      /tmp/RtmpYzIdew/pkgdossier-ggplot2
 git_ref("path/to/MAIHDA", "main")
 #> <pkgdossier source> git path/to/MAIHDA @ main
 ```
