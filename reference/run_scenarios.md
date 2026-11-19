@@ -141,7 +141,7 @@ d <- example_dossier()
 prepare_versions(d, quiet = TRUE)
 run_scenarios(d)
 #> Running 3 scenario(s), 30 steps, under udfixture 1.0.0 and 1.1.0 in 4 runs (abba), 3 timed repeats per timed step; a step's run stops after 300 s (step_timeout)
-#> Machine before: CPU 0% busy, 0 other R processes
+#> Machine before: CPU 2% busy, 0 other R processes
 #> [1/4] base_a: up to date, reused
 #> [2/4] cand_a: up to date, reused
 #> [3/4] cand_b: up to date, reused
