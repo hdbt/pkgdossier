@@ -1,6 +1,10 @@
 # The example tarballs in inst/extdata are built from the test fixtures by
 # dev/build-example-tarballs.R. These tests fail when the two drift apart.
 
+# Compared line by line: a Windows checkout can give the fixtures CRLF line endings,
+# while the tarballs hold LF.
+file_lines <- function(f) lapply(f, readLines, warn = FALSE)
+
 test_that("the bundled example tarballs hold the test fixtures", {
   for (v in c("base", "cand")) {
     src <- test_path("fixtures", paste0("udfixture-", v))
@@ -13,14 +17,13 @@ test_that("the bundled example tarballs hold the test fixtures", {
     files <- list.files(src, recursive = TRUE)
     files <- files[files != "DESCRIPTION"]  # R CMD build adds Packaged: to DESCRIPTION
     expect_setequal(setdiff(list.files(pkg, recursive = TRUE), "DESCRIPTION"), files)
-    expect_equal(unname(tools::md5sum(file.path(pkg, files))),
-                 unname(tools::md5sum(file.path(src, files))),
+    expect_equal(file_lines(file.path(pkg, files)), file_lines(file.path(src, files)),
                  label = paste("file contents for", v))
     unlink(exdir, recursive = TRUE)
   }
   expect_equal(
-    unname(tools::md5sum(system.file("extdata", "udfixture-scenarios.R", package = "pkgdossier"))),
-    unname(tools::md5sum(test_path("fixtures", "scenarios.R")))
+    file_lines(system.file("extdata", "udfixture-scenarios.R", package = "pkgdossier")),
+    file_lines(test_path("fixtures", "scenarios.R"))
   )
 })
 

@@ -23,3 +23,15 @@ get_res <- function() {
   if (is.null(fixture_cache$res)) fixture_cache$res <- run_fixture_dossier()
   fixture_cache$res
 }
+
+# install.packages() on Windows and macOS also reads a repository's binary index, and
+# for a file:// repository a missing index is an error: the local repositories the
+# tests build get an empty one, so that their source packages are installed.
+# (tools::write_PACKAGES() writes no file for an empty folder.)
+add_empty_binary_index <- function(repo_dir) {
+  if (identical(.Platform$pkgType, "source")) return(invisible())
+  bin <- utils::contrib.url(repo_dir, type = "binary")
+  dir.create(bin, recursive = TRUE, showWarnings = FALSE)
+  file.create(file.path(bin, "PACKAGES"))
+  invisible()
+}

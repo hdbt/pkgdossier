@@ -139,7 +139,8 @@ test_that("summary and print describe the comparison", {
   expect_equal(s$status[s$step == "formula"], "same") # prints its environment's address
   expect_equal(s$status[s$step == "meta"], "same")    # the package's own DESCRIPTION
   expect_equal(s$status[s$step == "expected"], "same") # an error the vignette shows on purpose
-  expect_true(cmp$meta$own_metadata >= 2L)             # Version and Packaged at least
+  # Version at least; Packaged too, unless both versions were built in the same second
+  expect_true(cmp$meta$own_metadata >= 1L)
   kept <- differences(compare_runs(get_res()$d, keep_metadata = TRUE))
   expect_true("info$Version" %in% kept$path)
   expect_equal(s$status[s$step == "err_class"], "error_both")

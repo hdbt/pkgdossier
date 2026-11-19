@@ -95,6 +95,7 @@ test_that("deps = 'cran' installs current dependencies from the repository, offl
     tools::write_PACKAGES(contrib, type = "source")
   }
   publish_dep("0.1.0", 42L)
+  add_empty_binary_index(root)
   p <- normalizePath(root, winslash = "/")
   url <- if (startsWith(p, "/")) paste0("file://", p) else paste0("file:///", p)
 
@@ -235,6 +236,8 @@ test_that("snapshot versions that do not build are taken current, with their dep
   make_pkg(now, "uddep", "0.2.0", "f <- function() uddepnew::h() + 1", imports = "uddepnew")
   make_pkg(now, "uddep2", "0.2.0", "g <- function() uddep::f()", imports = "uddep")
   make_pkg(now, "uddep3", "0.2.0", "k <- function() uddep::f()", imports = "uddep")
+  add_empty_binary_index(snap)
+  add_empty_binary_index(now)
   url <- function(p) { p <- normalizePath(p, winslash = "/"); if (startsWith(p, "/")) paste0("file://", p) else paste0("file:///", p) }
 
   d <- dossier("x", candidate = local_path("."), deps = deps_snapshot(), work = file.path(root, "work"))
