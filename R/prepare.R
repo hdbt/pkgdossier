@@ -486,16 +486,14 @@ build_ignored <- function(rel, path) {
 }
 
 # `child` relative to `parent` ("" for the folder itself), or NULL when it is not inside.
+# On Windows the comparison ignores case; the part returned keeps the child's case.
 path_within <- function(child, parent) {
   norm <- function(p) sub("/+$", "", absolute_path(p))
   ch <- norm(child)
   pa <- norm(parent)
-  if (.Platform$OS.type == "windows") {
-    ch <- tolower(ch)
-    pa <- tolower(pa)
-  }
-  if (identical(ch, pa)) return("")
-  if (startsWith(ch, paste0(pa, "/"))) substring(ch, nchar(pa) + 2L) else NULL
+  same_case <- if (.Platform$OS.type == "windows") tolower else identity
+  if (identical(same_case(ch), same_case(pa))) return("")
+  if (startsWith(same_case(ch), paste0(same_case(pa), "/"))) substring(ch, nchar(pa) + 2L) else NULL
 }
 
 # R CMD build of a folder copies everything .Rbuildignore does not exclude: a work

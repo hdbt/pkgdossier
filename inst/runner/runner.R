@@ -362,6 +362,9 @@ mask_volatile <- function(x, a) {
   roots <- roots[nzchar(roots)]
   roots <- roots[order(-nchar(roots))]
   for (i in seq_along(roots)) x <- gsub(roots[[i]], names(roots)[i], x, fixed = TRUE)
+  # the separator after a masked folder is written "/", so a masked path reads the same
+  # on Windows (where tempfile() joins with a backslash) as elsewhere
+  x <- gsub("(<tempdir>|<run>)\\\\+", "\\1/", x, perl = TRUE)
   x <- gsub("(<tempdir>[/\\\\]+)[^/\\\\\\s'\"]*?[0-9a-f]{6,}", "\\1<tempfile>", x, perl = TRUE)
   x <- gsub("(?<![A-Za-z0-9_.])file[0-9a-f]{8,}(?![A-Za-z0-9_])", "<tempfile>", x, perl = TRUE)
   # print() pads columns to the longest value, whose length a masked one no longer

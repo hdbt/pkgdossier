@@ -22,9 +22,10 @@
   they use two small source tarballs bundled in `inst/extdata` (about 1.5 KB each),
   install them into `tempdir()` and use no network. Later examples reuse the
   installations and runs of earlier ones, so the whole set takes about 20
-  seconds under `R CMD check --as-cran`.
+  seconds under `R CMD check --as-cran` on Linux and about 1.5 minutes on Windows.
 * The vignette runs a dossier on the same bundled tarballs, installing them into
-  `tempdir()` without network access; it builds in about 11 seconds.
+  `tempdir()` without network access; it builds in about 11 seconds on Linux and
+  about 25 seconds on Windows.
 * The tests use no network. They build and install two versions of a tiny fixture
   package shipped in `tests/testthat/fixtures/` from source into `tempdir()` and run
   them in sequential child R processes (one at a time, no parallelism). Timing
