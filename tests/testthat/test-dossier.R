@@ -209,6 +209,17 @@ test_that("the GitHub Actions template ships and uses run_dossier()", {
   expect_true(any(grepl("write_dossier_md(cmp", txt, fixed = TRUE)))
 })
 
+test_that("the GitHub Actions template updates its own comment, found by the marker", {
+  txt <- readLines(system.file("github", "pkgdossier.yaml", package = "pkgdossier"))
+  code <- txt[!grepl("^\\s*#", txt)]
+  # the Actions bot's comment that starts with the summary's first line, not the
+  # bot's last comment (--edit-last), which may be another workflow's
+  marker <- strsplit(write_dossier_md(get_res()$cmp), "\n", fixed = TRUE)[[1]][1]
+  expect_true(any(grepl(paste0('startswith("', marker, '")'), code, fixed = TRUE)))
+  expect_true(any(grepl('"github-actions[bot]"', code, fixed = TRUE)))
+  expect_false(any(grepl("--edit-last", code, fixed = TRUE)))
+})
+
 test_that("run_dossier() runs every stage and writes the report and JSON", {
   r <- get_res()
   page <- file.path(tempdir(), "ud-run-dossier-page")

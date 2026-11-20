@@ -71,15 +71,27 @@ jobs:
           path: dossier-page
           if-no-files-found: ignore
 
+      # The summary replaces the comment an earlier run posted, if any: the latest by
+      # github-actions[bot] that starts with the marker write_dossier_md() writes.
+      # Comments that other workflows post as the same bot are left alone.
       - name: Comment on the pull request
         if: github.event.pull_request.head.repo.full_name == github.repository
+        shell: bash   # with pipefail: a failed lookup stops the step before it posts
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: >
-          gh pr comment ${{ github.event.pull_request.number }}
-          --repo ${{ github.repository }}
-          --body-file dossier.md
-          --edit-last --create-if-none
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          id=$(gh api --paginate "repos/$REPO/issues/$PR/comments" --jq '.[]
+                 | select(.user.login == "github-actions[bot]")
+                 | select(.body | startswith("<!-- pkgdossier -->"))
+                 | .id' | tail -n 1)
+          if [ -n "$id" ]; then
+            gh api --method PATCH "repos/$REPO/issues/comments/$id" \
+              --field body=@dossier.md --jq .html_url
+          else
+            gh pr comment "$PR" --repo "$REPO" --body-file dossier.md
+          fi
 
       # Last, so the report and the comment are there either way: fail the check when
       # severe differences remain that are neither accepted nor named by NEWS.
