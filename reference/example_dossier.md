@@ -48,7 +48,7 @@ d
 #>   capture:   width 80, 100 dpi, LANGUAGE en
 #>   collect:   default caps; default skipped classes
 #>   deps:      shared, from the current library paths
-#>   work:      /tmp/RtmpeR6FTE/pkgdossier-example
+#>   work:      /tmp/RtmpDR5Lhw/pkgdossier-example
 # \donttest{
 prepare_versions(d)
 #> base: tarball /home/runner/work/_temp/Library/pkgdossier/extdata/udfixture_1.0.0.tar.gz unchanged, reusing the installed copy
