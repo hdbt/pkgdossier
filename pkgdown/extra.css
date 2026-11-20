@@ -1,0 +1,256 @@
+/* pkgdossier site styling, on top of the bslib theme in _pkgdown.yml.
+   Colours come from the hex logo. The accents are for fills and lines; small text on
+   white uses the darker -ink variants so it stays readable. */
+
+:root {
+  --md-navy: #17202c;        /* logo outline: navbar, headings, text */
+  --md-blue: #2c5ea8;        /* logo hexagon and the baseline in the report */
+  --md-sky: #c3d5f1;         /* logo back page */
+  --md-peach: #f1c6a8;       /* logo highlight */
+  --md-orange: #b04f16;      /* logo highlight line and the candidate in the report */
+  --md-blue-ink: #234b87;    /* darker accents for small text on white */
+  --md-orange-ink: #8f3f10;
+  --md-ink: #5B6775;         /* soft text */
+  --md-line: #E3E8EE;
+  --md-code-bg: #F3F6F9;
+  --md-shadow-sm: 0 1px 2px rgba(23, 32, 44, 0.05);
+  --md-shadow: 0 1px 2px rgba(23, 32, 44, 0.06), 0 10px 28px rgba(23, 32, 44, 0.09);
+}
+
+/* Inter reads thin at Bootstrap's heading weight of 500. */
+h1, h2, h3, h4 { font-weight: 700; letter-spacing: -0.015em; }
+
+/* Homepage guide table: the guide names stay on one line. */
+#guides + table td:first-child { white-space: nowrap; padding-right: 1.5rem; }
+
+/* Code blocks: pkgdown's syntax highlighting sets its own grey after Bootstrap's
+   code-bg; use the theme's. */
+main pre { background-color: var(--md-code-bg); border-color: var(--md-line); }
+
+/* Navbar: the logo's navy (bg: dark in _pkgdown.yml) over a line of its accents. */
+.navbar {
+  border-bottom: 3px solid transparent;
+  border-image: linear-gradient(90deg, var(--md-blue) 0%, var(--md-sky) 38%,
+                                var(--md-peach) 66%, var(--md-orange) 100%) 1;
+}
+
+/* Homepage hero ------------------------------------------------------------------ */
+
+.md-hero {
+  padding: 1.75rem 0 0.5rem;
+  margin-bottom: 2.75rem;
+}
+.md-hero p { margin: 0; }
+
+.md-hero-eyebrow {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--md-orange-ink);
+  margin-bottom: 0.75rem;
+}
+
+/* pkgdown wraps the hero's h1 and the logo in .page-header: logo on the right. */
+.md-hero .page-header {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.md-hero .page-header .logo {
+  float: none;
+  flex: none;
+  width: 118px;
+  height: auto;
+  margin: 0;
+  filter: drop-shadow(0 8px 16px rgba(23, 32, 44, 0.18));
+}
+
+.md-hero .md-hero-title {
+  margin: 0;
+  font-size: clamp(2.15rem, 1.35rem + 3vw, 3.5rem);
+  font-weight: 800;
+  line-height: 1.06;
+  letter-spacing: -0.035em;
+  color: var(--md-navy);
+}
+.md-hero .md-hero-title::after {
+  content: "";
+  display: block;
+  width: 4.5rem;
+  height: 4px;
+  margin-top: 1.25rem;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--md-blue) 0 33.3%, var(--md-peach) 33.3% 66.6%,
+                              var(--md-orange) 66.6% 100%);
+}
+
+.md-hero-lead {
+  max-width: 40rem;
+  margin-top: 1.25rem;
+  font-size: 1.15rem;
+  line-height: 1.6;
+  color: var(--md-ink);
+}
+
+.md-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.75rem;
+}
+.md-hero-actions p { display: contents; }
+
+.md-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.7rem 1.4rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease,
+              border-color 0.15s ease;
+}
+.md-btn:hover { transform: translateY(-1px); text-decoration: none; }
+.md-btn:focus-visible { outline: 3px solid var(--md-sky); outline-offset: 2px; }
+.md-btn-primary {
+  background: var(--md-navy);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(23, 32, 44, 0.22);
+}
+.md-btn-primary:hover { background: #24344a; color: #fff; }
+.md-btn-secondary {
+  background: #fff;
+  color: var(--md-navy);
+  border-color: #cdd5df;
+}
+.md-btn-secondary:hover { border-color: var(--md-blue); color: var(--md-blue-ink); }
+
+/* The install command: a light pill with a coloured prompt that is not copied. */
+.md-hero-install {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  max-width: 100%;
+  margin-top: 1.25rem;
+  padding: 0.55rem 1.15rem;
+  overflow-x: auto;
+  background: var(--md-code-bg);
+  border: 1px solid var(--md-line);
+  border-radius: 999px;
+  font-size: 0.9rem;
+}
+.md-hero-install::before {
+  content: ">";
+  font-family: var(--bs-font-monospace);
+  font-weight: 700;
+  color: var(--md-orange);
+  user-select: none;
+}
+.md-hero-install code {
+  padding: 0;
+  background: none;
+  color: var(--md-navy);
+  white-space: nowrap;
+}
+.md-hero-install .btn-copy-ex { display: none; }
+
+/* The example figure under the hero: a white panel. */
+.md-hero-figure {
+  margin-top: 2.5rem;
+  padding: 0.6rem;
+  background: #fff;
+  border: 1px solid var(--md-line);
+  border-radius: 0.9rem;
+  box-shadow: var(--md-shadow);
+}
+.md-hero-figure a { display: block; }
+.md-hero-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+}
+.md-hero-figure-caption {
+  padding: 0.65rem 0.35rem 0.15rem;
+  font-size: 0.85rem;
+  color: var(--md-ink);
+}
+
+/* Gallery ------------------------------------------------------------------------ */
+
+.md-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: 1rem;
+  margin: 1.25rem 0 2.5rem;
+}
+/* pandoc puts each card's link in a paragraph of its own */
+.md-gallery-item > p { height: 100%; margin: 0; }
+.md-gallery-item a {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid var(--md-line);
+  border-radius: 0.75rem;
+  box-shadow: var(--md-shadow-sm);
+  color: inherit;
+  text-decoration: none;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+.md-gallery-item a:hover,
+.md-gallery-item a:focus-visible {
+  transform: translateY(-3px);
+  border-color: #cdd5df;
+  box-shadow: var(--md-shadow);
+}
+.md-gallery-item a:focus-visible { outline: 3px solid var(--md-sky); outline-offset: 2px; }
+.md-gallery-item img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 10;
+  object-fit: contain;
+  padding: 0.5rem;
+  background: #fff;
+  border-bottom: 1px solid var(--md-line);
+}
+.md-gallery-caption {
+  display: block;
+  padding: 0.7rem 0.9rem 0.85rem;
+  font-size: 0.87rem;
+  line-height: 1.45;
+  color: var(--md-ink);
+}
+.md-gallery-caption strong {
+  display: block;
+  margin-bottom: 0.15rem;
+  font-weight: 650;
+  color: var(--md-navy);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .md-btn,
+  .md-gallery-item a { transition: none; }
+  .md-btn:hover,
+  .md-gallery-item a:hover,
+  .md-gallery-item a:focus-visible { transform: none; }
+}
+
+/* Phones: a smaller logo beside the headline. */
+@media (max-width: 575.98px) {
+  .md-hero { padding-top: 0.75rem; }
+  .md-hero .page-header { gap: 1rem; align-items: flex-start; }
+  .md-hero .page-header .logo { width: 76px; }
+  .md-hero-lead { font-size: 1.05rem; }
+}

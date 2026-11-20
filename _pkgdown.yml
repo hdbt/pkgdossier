@@ -5,6 +5,19 @@ url: https://hdbt.github.io/pkgdossier/
 
 template:
   bootstrap: 5
+  # Colours from the hex logo: the document blue for links and accents, the outline
+  # navy for the navbar and the text. No dark mode: the figures have white
+  # backgrounds. pkgdown/extra.css holds the rest of the styling.
+  bslib:
+    primary: "#2c5ea8"
+    dark: "#17202c"
+    body-color: "#17202c"
+    headings-color: "#17202c"
+    border-radius: 0.6rem
+    code-bg: "#F3F6F9"
+    base_font: {google: "Inter"}
+    heading_font: {google: "Inter"}
+    code_font: {google: "JetBrains Mono"}
   # pkgdown takes the site logo from man/figures/logo.svg; link previews need a PNG.
   opengraph:
     image:
@@ -13,6 +26,14 @@ template:
 
 home:
   title: "pkgdossier: compare what users meet before and after a package upgrade"
+
+# Reference example figures as SVG on white. pkgdown 2.2 draws them with bg = NA,
+# which svglite rejects ("Expected string vector of length 1"); grDevices::svg takes
+# it. A vignette can still set svglite in its own chunk options.
+figures:
+  dev: grDevices::svg
+  fig.ext: svg
+  bg: white
 
 reference:
 - title: Describe a dossier
@@ -60,6 +81,8 @@ articles:
   - articles/baselines-and-dependencies
 
 navbar:
+  bg: dark
+  type: dark
   structure:
     left: [intro, reference, articles, news]
     right: [search, github]
