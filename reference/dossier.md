@@ -190,7 +190,7 @@ dossier("MAIHDA",
 #>   capture:   width 80, 100 dpi, LANGUAGE en
 #>   collect:   default caps; default skipped classes
 #>   deps:      shared, from the current library paths
-#>   work:      /tmp/Rtmp6GzvDi/dossier-0.3.0
+#>   work:      /tmp/RtmpP91dCr/dossier-0.3.0
 
 # the whole pipeline, on the small package bundled for examples
 # \donttest{
@@ -202,7 +202,7 @@ prepare_versions(d)
 #> cand udfixture 1.1.0  sha256 0eaefa1ba295  packaged 2026-11-06 15:33:45 UTC; root
 run_scenarios(d)
 #> Running 3 scenario(s), 30 steps, under udfixture 1.0.0 and 1.1.0 in 4 runs (abba), 3 timed repeats per timed step; a step's run stops after 300 s (step_timeout)
-#> Machine before: CPU 0% busy, 0 other R processes
+#> Machine before: CPU 1% busy, 0 other R processes
 #> [1/4] base_a: up to date, reused
 #> [2/4] cand_a: up to date, reused
 #> [3/4] cand_b: up to date, reused
