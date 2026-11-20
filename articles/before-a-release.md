@@ -211,9 +211,8 @@ NEWS can also describe changes that no scenario exercises. When it does,
 the summary says how many bullets match no step, and the coverage line
 lists the exported functions the scenarios do not use. If users rely on
 code that neither your vignettes nor your examples show, add it as a
-scenario file: see
-[`scenario_file()`](https://hdbt.github.io/pkgdossier/reference/from_vignettes.md)
-and [`step()`](https://hdbt.github.io/pkgdossier/reference/step.md).
+scenario file: see [Writing
+scenarios](https://hdbt.github.io/pkgdossier/articles/writing-scenarios.md).
 
 ## Accept what you have decided
 
@@ -300,7 +299,7 @@ cmp
 #> 
 #> 1 difference(s) in udfixture's own DESCRIPTION fields (Version, Packaged, ...), as an example printing sessionInfo() shows them, are not listed.
 #> 
-#> 7 difference(s) accepted by 7 rule(s) in /tmp/RtmpLdXp0e/accepted.csv; not counted above.
+#> 7 difference(s) accepted by 7 rule(s) in /tmp/Rtmp6OGblw/accepted.csv; not counted above.
 #> 
 #> Coverage: the scenarios use 17 of 18 exported functions. Not used: new_helper.
 #> 
@@ -369,6 +368,8 @@ them.
 6.  A last `run_dossier(force = TRUE, accept = ...)`, then
     [`check_differences()`](https://hdbt.github.io/pkgdossier/reference/check_differences.md).
 
-To run the same check on every pull request, copy the workflow shipped
-with pkgdossier into your repository:
-`file.copy(system.file("github", "pkgdossier.yaml", package = "pkgdossier"), ".github/workflows/pkgdossier.yaml")`.
+To run the same check on every pull request, see [On pull
+requests](https://hdbt.github.io/pkgdossier/articles/on-pull-requests.md).
+For other baselines than the CRAN release, and for the dependencies both
+versions run against, see [Baselines and
+dependencies](https://hdbt.github.io/pkgdossier/articles/baselines-and-dependencies.md).

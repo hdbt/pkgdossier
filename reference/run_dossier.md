@@ -164,8 +164,8 @@ cmp <- run_dossier(example_dossier(), html = file.path(tempdir(), "dossier-page"
 #> [2/4] cand_a: up to date, reused
 #> [3/4] cand_b: up to date, reused
 #> [4/4] base_b: up to date, reused
-#> Report: /tmp/RtmppaKTAH/dossier-page/dossier.html
-#> JSON:   /tmp/RtmppaKTAH/pkgdossier-example/dossier.json
+#> Report: /tmp/RtmpBg5E3u/dossier-page/dossier.html
+#> JSON:   /tmp/RtmpBg5E3u/pkgdossier-example/dossier.json
 cmp
 #> <pkgdossier comparison> udfixture 1.0.0 -> 1.1.0
 #> 3 scenario(s), 28 step(s) compared, 2 not run; abba runs, 3 timed repeats per timed step

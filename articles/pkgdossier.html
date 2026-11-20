@@ -5,6 +5,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Getting started with pkgdossier • pkgdossier</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
@@ -34,6 +39,9 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/before-a-release.html">Before a release</a></li>
+    <li><a class="dropdown-item" href="../articles/on-pull-requests.html">On pull requests</a></li>
+    <li><a class="dropdown-item" href="../articles/writing-scenarios.html">Writing scenarios</a></li>
+    <li><a class="dropdown-item" href="../articles/baselines-and-dependencies.html">Baselines and dependencies</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -55,8 +63,7 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-
-      <h1>Getting started with pkgdossier</h1>
+      <img src="../logo.svg" class="logo" alt=""><h1>Getting started with pkgdossier</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/hdbt/pkgdossier/blob/main/vignettes/pkgdossier.Rmd" class="external-link"><code>vignettes/pkgdossier.Rmd</code></a></small>
@@ -98,7 +105,7 @@ yet.</p>
 <span><span class="co">#&gt;   capture:   width 80, 100 dpi, LANGUAGE en</span></span>
 <span><span class="co">#&gt;   collect:   default caps; default skipped classes</span></span>
 <span><span class="co">#&gt;   deps:      shared, from the current library paths</span></span>
-<span><span class="co">#&gt;   work:      /tmp/Rtmpl1rXu9/pkgdossier-example</span></span></code></pre></div>
+<span><span class="co">#&gt;   work:      /tmp/RtmppgeGiP/pkgdossier-example</span></span></code></pre></div>
 <p><code><a href="../reference/run_dossier.html">run_dossier()</a></code> runs the stages in turn:
 <code><a href="../reference/prepare_versions.html">prepare_versions()</a></code> installs both versions into the work
 folder, <code><a href="../reference/run_scenarios.html">run_scenarios()</a></code> runs the scenarios four times

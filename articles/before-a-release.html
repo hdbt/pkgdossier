@@ -5,6 +5,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Before a release • pkgdossier</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
@@ -34,6 +39,9 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/before-a-release.html">Before a release</a></li>
+    <li><a class="dropdown-item" href="../articles/on-pull-requests.html">On pull requests</a></li>
+    <li><a class="dropdown-item" href="../articles/writing-scenarios.html">Writing scenarios</a></li>
+    <li><a class="dropdown-item" href="../articles/baselines-and-dependencies.html">Baselines and dependencies</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -55,8 +63,7 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-
-      <h1>Before a release</h1>
+      <img src="../logo.svg" class="logo" alt=""><h1>Before a release</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/hdbt/pkgdossier/blob/main/vignettes/articles/before-a-release.Rmd" class="external-link"><code>vignettes/articles/before-a-release.Rmd</code></a></small>
@@ -311,8 +318,8 @@ change, so read the <code>news</code> column of
 does, the summary says how many bullets match no step, and the coverage
 line lists the exported functions the scenarios do not use. If users
 rely on code that neither your vignettes nor your examples show, add it
-as a scenario file: see <code><a href="../reference/from_vignettes.html">scenario_file()</a></code> and
-<code><a href="../reference/step.html">step()</a></code>.</p>
+as a scenario file: see <a href="writing-scenarios.html">Writing
+scenarios</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="accept-what-you-have-decided">Accept what you have decided<a class="anchor" aria-label="anchor" href="#accept-what-you-have-decided"></a>
@@ -389,7 +396,7 @@ is rebuilt or rerun to apply the rules, only compared again:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; 1 difference(s) in udfixture's own DESCRIPTION fields (Version, Packaged, ...), as an example printing sessionInfo() shows them, are not listed.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; 7 difference(s) accepted by 7 rule(s) in /tmp/RtmpLdXp0e/accepted.csv; not counted above.</span></span>
+<span><span class="co">#&gt; 7 difference(s) accepted by 7 rule(s) in /tmp/Rtmp6OGblw/accepted.csv; not counted above.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Coverage: the scenarios use 17 of 18 exported functions. Not used: new_helper.</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -452,9 +459,10 @@ breaking.</li>
 <li>A last <code>run_dossier(force = TRUE, accept = ...)</code>, then
 <code><a href="../reference/check_differences.html">check_differences()</a></code>.</li>
 </ol>
-<p>To run the same check on every pull request, copy the workflow
-shipped with pkgdossier into your repository:
-<code>file.copy(system.file("github", "pkgdossier.yaml", package = "pkgdossier"), ".github/workflows/pkgdossier.yaml")</code>.</p>
+<p>To run the same check on every pull request, see <a href="on-pull-requests.html">On pull requests</a>. For other baselines
+than the CRAN release, and for the dependencies both versions run
+against, see <a href="baselines-and-dependencies.html">Baselines and
+dependencies</a>.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

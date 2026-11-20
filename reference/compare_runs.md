@@ -273,28 +273,28 @@ summary(cmp)
 #> 4               output_changed 1    1 0.0000 0.0000
 #> 5                 plot_changed 1    0 0.0000 0.0000
 #> 6                              0    0 0.0000 0.0000
-#> 7                              0    1 0.0020 0.0015
-#> 8                  value_moved 1    1 0.0020 0.0020
-#> 9  output_changed, value_moved 2    1 0.0020 0.0020
-#> 10                             0    1 0.0015 0.0010
-#> 11               field_removed 1    0 0.0030 0.0030
-#> 12                 field_added 1    0 0.0015 0.0015
-#> 13                   error_new 1    1 0.0015 0.0020
+#> 7                              0    1 0.0015 0.0010
+#> 8                  value_moved 1    1 0.0015 0.0010
+#> 9  output_changed, value_moved 2    1 0.0015 0.0010
+#> 10                             0    1 0.0015 0.0020
+#> 11               field_removed 1    0 0.0015 0.0015
+#> 12                 field_added 1    0 0.0020 0.0015
+#> 13                   error_new 1    1 0.0015 0.0015
 #> 14                 error_fixed 1    0 0.0015 0.0015
-#> 15                 warning_new 1    0 0.0015 0.0020
-#> 16                warning_gone 1    0 0.0015 0.0015
-#> 17     condition_class_changed 1    0 0.0015 0.0015
+#> 15                 warning_new 1    0 0.0015 0.0015
+#> 16                warning_gone 1    0 0.0015 0.0020
+#> 17     condition_class_changed 1    0 0.0015 0.0020
 #> 18                      slower 1    0 0.0000 0.2500
-#> 19                      faster 1    0 0.2505 0.0000
-#> 20                    unstable 1    0 0.0030 0.0015
-#> 21                             0    0 0.0030 0.0030
-#> 22              output_changed 1    0 0.0020 0.0015
-#> 23                             0    0 0.0015 0.0015
-#> 24     condition_class_changed 1    0 0.0035 0.0030
-#> 25                 value_moved 1    0 0.0015 0.0015
-#> 26                             0    0 0.0020 0.0020
+#> 19                      faster 1    0 0.2510 0.0000
+#> 20                    unstable 1    0 0.0020 0.0020
+#> 21                             0    0 0.0040 0.0040
+#> 22              output_changed 1    0 0.0020 0.0020
+#> 23                             0    0 0.0020 0.0020
+#> 24     condition_class_changed 1    0 0.0040 0.0040
+#> 25                 value_moved 1    0 0.0020 0.0020
+#> 26                             0    0 0.0025 0.0020
 #> 27                             0    1 0.0020 0.0015
-#> 28                             0    0 0.0020 0.0015
+#> 28                             0    0 0.0020 0.0020
 #> 29                             0    0     NA     NA
 #> 30                             0    0     NA     NA
 differences(cmp, kind = "value_moved")
