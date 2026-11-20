@@ -142,8 +142,8 @@ name a function without describing the change, so read the `news` column of
 NEWS can also describe changes that no scenario exercises. When it does, the summary
 says how many bullets match no step, and the coverage line lists the exported
 functions the scenarios do not use. If users rely on code that neither your
-vignettes nor your examples show, add it as a scenario file: see `scenario_file()`
-and `step()`.
+vignettes nor your examples show, add it as a scenario file: see
+[Writing scenarios](writing-scenarios.html).
 
 ## Accept what you have decided
 
@@ -223,6 +223,7 @@ warnings, whether or not NEWS names them.
 5. Intended differences accepted, with reasons, in `dev/dossier/accepted.csv`.
 6. A last `run_dossier(force = TRUE, accept = ...)`, then `check_differences()`.
 
-To run the same check on every pull request, copy the workflow shipped with
-pkgdossier into your repository:
-`file.copy(system.file("github", "pkgdossier.yaml", package = "pkgdossier"), ".github/workflows/pkgdossier.yaml")`.
+To run the same check on every pull request, see
+[On pull requests](on-pull-requests.html). For other baselines than the CRAN
+release, and for the dependencies both versions run against, see
+[Baselines and dependencies](baselines-and-dependencies.html).

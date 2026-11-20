@@ -55,6 +55,9 @@ articles:
   contents:
   - pkgdossier
   - articles/before-a-release
+  - articles/on-pull-requests
+  - articles/writing-scenarios
+  - articles/baselines-and-dependencies
 
 navbar:
   structure:

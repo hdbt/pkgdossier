@@ -1,0 +1,131 @@
+---
+title: "Baselines and dependencies"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", eval = FALSE)
+```
+
+A dossier compares two versions of a package, the baseline and the candidate. Both
+are built from source the same way, installed into their own libraries and run
+against the same dependencies. By default, the baseline is the CRAN release, the
+candidate is the package folder you are in, and the dependencies are the packages
+in your library. That answers the usual question before a release. This article
+covers the others: other baselines, packages not on CRAN, and which versions of the
+dependencies both versions run against.
+
+## Where a version comes from
+
+`dossier()` takes a source for each version:
+
+| Source | The version | Typical use |
+|---|---|---|
+| `cran_release()` | on CRAN now | the baseline (the default) |
+| `cran_version("1.0.0")` | a CRAN version, current or archived | an older baseline |
+| `installed_version()` | in your library, fetched as source from CRAN | as a user, before upgrading |
+| `tarball("mypkg_1.2.0.tar.gz")` | a source tarball on disk | a version you built or downloaded |
+| `git_ref(".", "v1.2.0")` | a commit, branch or tag, as committed | packages not on CRAN; branches |
+| `local_path(".")` | a package folder, as it is now | the candidate (the default) |
+
+Describing a dossier reads and downloads nothing; `prepare_versions()`, which
+`run_dossier()` calls first, fetches and builds both versions, and says what it
+downloads before it does. A copy of the package installed in your library is never
+used: `installed_version()` only says which version to fetch.
+
+## Choosing the baseline
+
+**The release your users have** is `cran_release()`, the default. Each call reads
+CRAN's index, so a new release becomes the baseline as soon as the index lists it.
+
+**An older release.** Many users skip releases, and upgrade from a version older
+than the current one. To see what someone upgrading from 1.0.0 meets:
+
+```{r}
+run_dossier(dossier("mypkg", base = cran_version("1.0.0")))
+```
+
+The scenarios are then 1.0.0's vignettes and examples: the code those users learned
+from.
+
+**A package not on CRAN.** Compare with the git tag of the last release. When
+`run_dossier()` finds no CRAN release, it names the repository's tags:
+
+```{r}
+run_dossier(dossier("mypkg", base = git_ref(".", "v0.3.0")))
+```
+
+**Two branches.** `git_ref()` exports only what is committed, with `git archive`,
+and builds it in the work folder, never in the repository:
+
+```{r}
+run_dossier(dossier("mypkg", base = git_ref(".", "main"),
+                    candidate = git_ref(".", "feature")))
+```
+
+For a package in a subfolder of its repository, give the subfolder:
+`git_ref(".", "v1.0.0", subdir = "pkg")`, `local_path("pkg")`.
+
+## Checking the baseline against its tag
+
+A CRAN release is the tarball you uploaded, not necessarily the commit you tagged.
+With `base_tag`, `prepare_versions()` checks that the baseline's `R/` folder matches
+the tag (line endings aside) and counts the candidate's commits since:
+
+```{r}
+run_dossier(dossier("mypkg", base_tag = "v1.2.0"))
+```
+
+The report shows the result with the rest of the provenance: each version's sha256,
+its `Packaged`, `Repository` and `Date/Publication` fields, and the git commit.
+
+## Dependencies
+
+Both versions always run against the same dependencies, so every labelled
+difference comes from the package itself. `deps` chooses which dependencies those
+are:
+
+| `deps` | Both versions run against | Use it |
+|---|---|---|
+| `deps_shared()` | the packages in your library (the default) | the everyday run: fast, nothing installed |
+| `deps_cran()` | today's CRAN versions, installed in the work folder | before a release: what a user installing today gets |
+| `deps_snapshot()` | the versions CRAN had on the baseline's release date | to run the baseline as its users had it |
+
+With `deps_cran()` and `deps_snapshot()`, the package's dependencies (`Depends`,
+`Imports` and `LinkingTo`, recursively) are installed into the work folder. R's base
+and recommended packages are used as installed, and packages only the scenarios use,
+such as a vignette's suggested packages, come from your library.
+
+```{r}
+run_dossier(dossier("mypkg", deps = deps_cran()))
+```
+
+`deps_snapshot()` takes the versions from Posit Package Manager's dated snapshots.
+For a baseline from git or a folder, whose packaging date is today, give the date:
+`deps_snapshot("2025-06-10")`. A candidate that needs newer dependencies than the
+snapshot has stops with a message. Under an R much newer than the snapshot, some old
+versions no longer build; those are installed at their current version, and
+`prepare_versions()` says which.
+
+## When a dependency broke the release
+
+A step that errors under both versions is a scenario problem: release code that
+fails whichever version runs it. When the release once ran cleanly, a dependency may
+have changed since: a function removed, a default changed. Run the dossier again
+with `deps_snapshot()`. If the problem goes away, a change in a dependency broke
+that code, for the release and for your new version alike.
+
+## The work folder
+
+Everything a dossier fetches, builds, installs and runs is kept in its work folder,
+by default in `tempdir()`, which is gone when R ends. To keep the work between
+sessions, give it a folder of its own:
+
+```{r}
+d <- dossier("mypkg", work = "~/dossiers/mypkg")
+```
+
+Keep it outside the package, or list it in `.Rbuildignore`: `R CMD build` would
+otherwise copy it into every build. A version whose source has not changed is not
+installed again, and runs are reused while nothing that shapes them has changed. The
+dependency libraries are kept per R minor version (4.5, 4.6, ...), so using the same
+folder under another R installs them afresh.

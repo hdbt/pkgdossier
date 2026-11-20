@@ -1,0 +1,138 @@
+---
+title: "On pull requests"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+library(pkgdossier)
+```
+
+A dossier before a release finds what users would meet, but by then the changes
+behind it are weeks old. Run on every pull request, it shows each change's effect
+while the change is still under review: a comment lists what users of the release
+would meet if the pull request were merged and released, and the check fails when a
+severe change is neither announced in NEWS nor accepted.
+
+## Set it up
+
+pkgdossier ships a GitHub Actions workflow. Copy it into your package's repository:
+
+```{r, eval = FALSE}
+file.copy(system.file("github", "pkgdossier.yaml", package = "pkgdossier"),
+          ".github/workflows/pkgdossier.yaml")
+```
+
+Commit and push it; it runs on the next pull request. Until pkgdossier is on CRAN,
+change `any::pkgdossier` in the workflow to `github::hdbt/pkgdossier`.
+
+## What it does
+
+On each pull request the workflow:
+
+1. checks the pull request out into the folder `candidate`, and installs R, pandoc
+   and the pull request's dependencies;
+2. runs the dossier: the pull request's code against the CRAN release, with the
+   release's vignettes and help-page examples, applying the rules in
+   `candidate/dev/dossier/accepted.csv` if the file exists;
+3. uploads the HTML report as the artifact `dossier-page`;
+4. posts the summary as a comment on the pull request, and on later pushes updates
+   that comment rather than adding another;
+5. fails the check when a severe difference is left that is neither accepted nor
+   named by a NEWS bullet.
+
+The comment is the text `write_dossier_md()` writes. For the example dossier
+bundled with pkgdossier it reads:
+
+```{r, comment = "", collapse = FALSE}
+d <- example_dossier()
+cmp <- run_dossier(d, html = NULL, json = NULL, open = FALSE, quiet = TRUE)
+cat(write_dossier_md(cmp))
+```
+
+In the workflow it ends with a link to the run, where the report can be downloaded.
+
+## The baseline
+
+The workflow compares each pull request with the CRAN release. The comment answers
+"what will the next release do to its users?", so it also lists changes merged
+before this pull request. Accept those once they are settled (see below), and each
+pull request's comment shows what is new.
+
+To see only what one pull request changes, or for a package not on CRAN yet,
+compare with the main branch instead: check out with `fetch-depth: 0` and give the
+dossier `base = git_ref("candidate", "origin/main")`. The scenarios are then the main
+branch's vignettes and examples.
+
+## Accept on the pull request
+
+When the check fails, each difference it lists is a bug to fix, a NEWS bullet to
+write in the same pull request, or a change to accept. Accepted differences are
+rules in `dev/dossier/accepted.csv`, committed with the pull request, so reviewers
+see what was accepted and why in the diff.
+
+Write the rules with `accept_differences()` after running the dossier on the pull
+request's branch (see [Before a release](before-a-release.html)), or by hand, from
+the comment. A rule has six columns. The first five are matched against a
+difference, and an empty field or `*` matches anything:
+
+```{r}
+rules <- file.path(tempdir(), "accepted.csv")   # in your repository: dev/dossier/accepted.csv
+writeLines(c(
+  "kind,scenario,step,path,cand,reason",
+  "unstable,api,noisy,,*,noisy() re-seeds from the clock",
+  "argument_removed,(namespace),warn_gone,verbose,*,verbose had no effect"
+), rules)
+```
+
+With these rules, the workflow's last step still fails, for the two severe changes
+left:
+
+```{r, error = TRUE}
+cmp <- compare_runs(d, accept = rules)
+check_differences(cmp, max_severity = 1, no_news = TRUE)
+```
+
+Keep the file in a folder that `.Rbuildignore` excludes and that git tracks: if
+your `.gitignore` lists `dev/`, choose another folder and change the path in the
+workflow.
+
+After a release, the release is the new baseline and the old rules match nothing.
+The summary then says how many rules may be stale; empty the file.
+
+## The check
+
+The workflow's last step is
+
+```{r, eval = FALSE}
+pkgdossier::check_differences(cmp, max_severity = 1, no_news = TRUE)
+```
+
+It fails for severe changes (and unstable steps) that are neither accepted nor in a
+step a NEWS bullet names. It runs after the comment, so the report and the comment
+are there either way. To be stricter, use `max_severity = 2`, so that moved numbers
+and new warnings fail it too, or drop `no_news = TRUE`, so that a NEWS bullet alone
+does not pass a change. To report without failing, remove the step.
+
+## Adjusting the run
+
+The dossier step is a few lines of R in the workflow; change them as you would at
+the console.
+
+- **Scenario files**: the pull request is checked out in `candidate`, so a scenario
+  file in your repository is
+  `scenario_file("candidate/dev/dossier/scenarios.R")`, added to the dossier's
+  `scenarios` (see [Writing scenarios](writing-scenarios.html)).
+- **Time**: the dossier installs two versions and runs every vignette and example
+  four times. The workflow gives the whole run an hour (`timeout = 3600`) and each
+  step five minutes. For a faster run, `dossier(..., reps = 0)` makes no timed
+  repeats and `run_dossier(..., workers = 2)` makes two runs at once; both leave
+  steps unlabelled `slower` or `faster`.
+- **Dependencies**: both versions run against the packages installed for the pull
+  request. If the release needs one the pull request no longer does, the run stops
+  and names it; add it to `extra-packages`.
+
+## Pull requests from forks
+
+GitHub does not give workflows started from forks write access to the pull request,
+so for those the comment is skipped. The report is still uploaded and the check
+still runs.
