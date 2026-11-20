@@ -42,13 +42,16 @@ reference:
   - accept_differences
   - check_differences
 
+# Articles in vignettes/articles/ are built only for this site: .Rbuildignore keeps
+# them out of the package, so CRAN neither ships nor runs them.
 articles:
 - title: Guides
   navbar: ~
   contents:
   - pkgdossier
+  - articles/before-a-release
 
 navbar:
   structure:
-    left: [intro, reference, news]
+    left: [intro, reference, articles, news]
     right: [search, github]
