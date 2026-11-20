@@ -13,7 +13,7 @@ Description: Runs the code users learned from a package's released version
     is intended is left to the reader. Results are returned as data, written
     as JSON and rendered as a standalone HTML report.
 License: MIT + file LICENSE
-URL: https://github.com/hdbt/pkgdossier
+URL: https://hdbt.github.io/pkgdossier/, https://github.com/hdbt/pkgdossier
 BugReports: https://github.com/hdbt/pkgdossier/issues
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

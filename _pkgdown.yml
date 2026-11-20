@@ -1,6 +1,5 @@
 # The site for pkgdossier, built by .github/workflows/pkgdown.yaml and published to
-# GitHub Pages. Add the url to URL in DESCRIPTION once the site is live there (CRAN
-# checks every URL in DESCRIPTION).
+# GitHub Pages. The url is also in DESCRIPTION's URL field, where CRAN checks it.
 url: https://hdbt.github.io/pkgdossier/
 
 template:
