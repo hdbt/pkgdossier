@@ -12,9 +12,12 @@
 <link rel="manifest" href="site.webmanifest">
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
-<script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/Inter-0.4.10/font.css" rel="stylesheet">
+<link href="deps/JetBrains_Mono-0.4.10/font.css" rel="stylesheet">
+<link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="pkgdossier: compare what users meet before and after a package upgrade">
+<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><link href="extra.css" rel="stylesheet">
+<meta property="og:title" content="pkgdossier: compare what users meet before and after a package upgrade">
 <meta name="description" content="Runs the code users learned from a package's released version (its vignettes, help-page examples or scenario scripts) unchanged under that release and under a candidate version, each installed in its own library and run in its own R process, and reports what a user meets after upgrading: new errors and warnings, changed printed output, moved numbers, removed or added object fields, changed plots and changes in run time. Each difference is labelled mechanically; deciding whether it is intended is left to the reader. Results are returned as data, written as JSON and rendered as a standalone HTML report.">
 <meta property="og:description" content="Runs the code users learned from a package's released version (its vignettes, help-page examples or scenario scripts) unchanged under that release and under a candidate version, each installed in its own library and run in its own R process, and reports what a user meets after upgrading: new errors and warnings, changed printed output, moved numbers, removed or added object fields, changed plots and changes in run time. Each difference is labelled mechanically; deciding whether it is intended is left to the reader. Results are returned as data, written as JSON and rendered as a standalone HTML report.">
 <meta property="og:image" content="https://hdbt.github.io/pkgdossier/reference/figures/logo.png">
@@ -24,7 +27,7 @@
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
-    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+    <nav class="navbar navbar-expand-lg fixed-top bg-dark" data-bs-theme="dark" aria-label="Site navigation"><div class="container">
 
     <a class="navbar-brand me-2" href="index.html">pkgdossier</a>
 
@@ -62,76 +65,125 @@
   </div>
 </nav><div class="container template-home">
 <div class="row">
-  <main id="main" class="col-md-9"><div class="section level1">
+  <main id="main" class="col-md-9"><div class="md-hero">
+<div class="md-hero-eyebrow">
+Upgrade checks for R packages
+</div>
 <div class="page-header">
-<img src="logo.svg" class="logo" alt=""><h1 id="pkgdossier-">pkgdossier <a class="anchor" aria-label="anchor" href="#pkgdossier-"></a>
+<img src="logo.svg" class="logo" alt=""><h1 class="md-hero-title">
+See what your users meet after an upgrade
 </h1>
 </div>
-<p><a href="https://github.com/hdbt/pkgdossier/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/hdbt/pkgdossier/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></p>
-<p>pkgdossier runs the code users learned from a package’s released version (its vignettes and help-page examples, or scenario scripts) unchanged under that release and under a candidate version, each installed in its own library and run in its own R process, and reports what a user meets after upgrading: new errors and warnings, changed printed output, moved numbers, removed or added object fields, changed plots, and changes in run time.</p>
-<p>Each difference gets a mechanical label (<code>error_new</code>, <code>field_removed</code>, <code>value_moved</code>, <code>output_changed</code>, <code>plot_changed</code>, <code>slower</code>, …). Whether a change is intended, undocumented or a defect is left to the reader.</p>
-<p>In your package’s folder, one call:</p>
+<div class="md-hero-lead">
+pkgdossier runs the code users learned from your package’s release, its vignettes and help-page examples, unchanged under that release and under the new version, each in its own library and R process. It reports what users meet after upgrading: new errors and warnings, changed output, moved numbers, removed fields, changed plots and slower steps, each with a mechanical label.
+</div>
+<div class="md-hero-actions">
+<p><a class="md-btn md-btn-primary" href="articles/pkgdossier.html">Get started</a> <a class="md-btn md-btn-secondary" href="#gallery">See the gallery</a></p>
+</div>
+<div class="md-hero-install">
+<code>pak::pak("hdbt/pkgdossier")</code>
+</div>
+</div>
+<div class="md-hero-figure">
+<a href="gallery/report-differences.png"><img src="gallery/report-differences.png" width="1085" height="702" alt="The Differences section of a pkgdossier report: counts of each kind of difference, then a table listing each difference with its step, where it is, and the values under version 1.0.0 and 1.1.0."></a>
+<div class="md-hero-figure-caption">
+The report for <code><a href="reference/example_dossier.html">example_dossier()</a></code>, a tiny package bundled with pkgdossier in two versions with one planted difference of each kind.
+</div>
+</div>
+<div class="section level2">
+<h2 id="one-call">One call<a class="anchor" aria-label="anchor" href="#one-call"></a>
+</h2>
+<p>In your package’s folder, <code><a href="reference/run_dossier.html">run_dossier()</a></code> compares the folder with the package’s CRAN release. It installs both versions, runs the release’s vignettes and help-page examples under each, opens the HTML report and prints a summary that starts with a verdict:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">pkgdossier</span><span class="fu">::</span><span class="fu"><a href="reference/run_dossier.html">run_dossier</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p>compares the folder with the package’s CRAN release. It installs both, runs the release’s vignettes and help-page examples under each, compares everything they produce, opens the HTML report and prints a summary that starts with a verdict. Before anything is downloaded it asks, and it says what is wrong when it cannot start: not a package folder, no CRAN release yet (it names the git tags to use instead), a dependency missing. A step that hangs is stopped after 5 minutes and recorded. Call it again after a fix: only the changed version is rebuilt and rerun.</p>
-<p>Every setting has one home. What is compared and how the runs are made go to <code><a href="reference/dossier.html">dossier()</a></code>; how the runs go stays with <code><a href="reference/run_dossier.html">run_dossier()</a></code>; the tolerances go to <code><a href="reference/compare_runs.html">compare_runs()</a></code> through <code><a href="reference/run_dossier.html">run_dossier()</a></code>:</p>
+<p>To try it without network access, run the bundled example:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/run_dossier.html">run_dossier</a></span><span class="op">(</span><span class="fu"><a href="reference/dossier.html">dossier</a></span><span class="op">(</span><span class="st">"mypkg"</span>, base <span class="op">=</span> <span class="fu"><a href="reference/sources.html">cran_version</a></span><span class="op">(</span><span class="st">"0.2.1"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>   <span class="co"># another baseline</span></span>
-<span><span class="fu"><a href="reference/run_dossier.html">run_dossier</a></span><span class="op">(</span><span class="fu"><a href="reference/dossier.html">dossier</a></span><span class="op">(</span><span class="st">"mypkg"</span>, reps <span class="op">=</span> <span class="fl">0</span><span class="op">)</span>, workers <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>           <span class="co"># a quick look, no timing labels</span></span>
-<span><span class="fu"><a href="reference/run_dossier.html">run_dossier</a></span><span class="op">(</span>tol <span class="op">=</span> <span class="fl">1e-3</span><span class="op">)</span>                                        <span class="co"># a looser tolerance</span></span>
-<span></span>
-<span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/dossier.html">dossier</a></span><span class="op">(</span></span>
-<span>  pkg       <span class="op">=</span> <span class="st">"mypkg"</span>,</span>
-<span>  base      <span class="op">=</span> <span class="fu"><a href="reference/sources.html">cran_release</a></span><span class="op">(</span><span class="op">)</span>,                 <span class="co"># or cran_version("0.2.1"), tarball("...")</span></span>
-<span>  candidate <span class="op">=</span> <span class="fu"><a href="reference/sources.html">git_ref</a></span><span class="op">(</span><span class="st">"path/to/mypkg"</span>, <span class="st">"main"</span><span class="op">)</span>, <span class="co"># or local_path("path/to/mypkg")</span></span>
-<span>  scenarios <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="reference/from_vignettes.html">from_vignettes</a></span><span class="op">(</span><span class="op">)</span>,          <span class="co"># the baseline's vignettes</span></span>
-<span>                   <span class="fu"><a href="reference/from_vignettes.html">from_examples</a></span><span class="op">(</span><span class="op">)</span>,           <span class="co"># its help-page examples</span></span>
-<span>                   <span class="fu"><a href="reference/from_vignettes.html">scenario_file</a></span><span class="op">(</span><span class="st">"dev/dossier/scenarios.R"</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  reps      <span class="op">=</span> <span class="fl">3</span>,</span>
-<span>  deps      <span class="op">=</span> <span class="fu"><a href="reference/deps.html">deps_shared</a></span><span class="op">(</span><span class="op">)</span>                   <span class="co"># or deps_cran(), deps_snapshot()</span></span>
-<span><span class="op">)</span></span>
-<span><span class="va">cmp</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/run_dossier.html">run_dossier</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span>    <span class="co"># the report and the JSON go into the work folder</span></span></code></pre></div>
-<p>A setting given in the wrong place is an error that writes out the right call.</p>
-<p>As a user of a package, see what an upgrade would change for you before you install it: the version you have against the current release, both built from CRAN’s sources.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/run_dossier.html">run_dossier</a></span><span class="op">(</span><span class="fu"><a href="reference/dossier.html">dossier</a></span><span class="op">(</span><span class="st">"ggplot2"</span>, base <span class="op">=</span> <span class="fu"><a href="reference/sources.html">installed_version</a></span><span class="op">(</span><span class="op">)</span>, candidate <span class="op">=</span> <span class="fu"><a href="reference/sources.html">cran_release</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>Or stage by stage, each caching its work in the work folder (after a call to <code><a href="reference/run_dossier.html">run_dossier()</a></code>, <code>cmp$dossier</code> is the dossier it used):</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/prepare_versions.html">prepare_versions</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span>      <span class="co"># download / export / build / install; provenance</span></span>
-<span><span class="fu"><a href="reference/run_scenarios.html">run_scenarios</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span>         <span class="co"># base, candidate, candidate, base, each in a fresh R process</span></span>
-<span><span class="va">cmp</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/compare_runs.html">compare_runs</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span></span>
-<span><span class="va">cmp</span>                      <span class="co"># counts by kind of difference</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">cmp</span><span class="op">)</span>             <span class="co"># one row per step</span></span>
-<span><span class="fu"><a href="reference/differences.html">differences</a></span><span class="op">(</span><span class="va">cmp</span>, kind <span class="op">=</span> <span class="st">"value_moved"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/write_dossier_html.html">write_dossier_html</a></span><span class="op">(</span><span class="va">cmp</span>, dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">d</span><span class="op">$</span><span class="va">work</span>, <span class="st">"page"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/write_dossier_json.html">write_dossier_json</a></span><span class="op">(</span><span class="va">cmp</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">d</span><span class="op">$</span><span class="va">work</span>, <span class="st">"dossier.json"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>Everything that shapes the runs is set in <code><a href="reference/dossier.html">dossier()</a></code>; the stages take only how they run (time limits, parallel runs, whether to ask before downloading), and <code><a href="reference/compare_runs.html">compare_runs()</a></code> takes the comparison’s tolerances, so it can be called again on the stored runs at no cost.</p>
-<p><code><a href="articles/pkgdossier.html">vignette("pkgdossier")</a></code> walks through a full dossier. To try it without network access, <code><a href="reference/example_dossier.html">example_dossier()</a></code> describes a dossier over a tiny package bundled with pkgdossier, in two versions with one planted difference of each kind:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/example_dossier.html">example_dossier</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/prepare_versions.html">prepare_versions</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/run_scenarios.html">run_scenarios</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/compare_runs.html">compare_runs</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span></span></code></pre></div>
-<p>Scenario files use <code><a href="reference/step.html">scenario()</a></code> and <code><a href="reference/step.html">step()</a></code>:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/step.html">scenario</a></span><span class="op">(</span><span class="st">"basics"</span>, title <span class="op">=</span> <span class="st">"Linear model"</span>, source <span class="op">=</span> <span class="st">"README"</span>,</span>
-<span>  <span class="fu"><a href="reference/step.html">step</a></span><span class="op">(</span><span class="st">"setup"</span>, <span class="st">"setup"</span>, <span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">mtcars</span>, <span class="fl">20</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  <span class="fu"><a href="reference/step.html">step</a></span><span class="op">(</span><span class="st">"fit"</span>, <span class="st">"fit"</span>, <span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">mpg</span> <span class="op">~</span> <span class="va">wt</span>, data <span class="op">=</span> <span class="va">d</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  <span class="fu"><a href="reference/step.html">step</a></span><span class="op">(</span><span class="st">"coef"</span>, <span class="st">"print"</span>, <span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span>, values <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
-<span>  <span class="fu"><a href="reference/step.html">step</a></span><span class="op">(</span><span class="st">"plot"</span>, <span class="st">"plot"</span>, <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">d</span><span class="op">$</span><span class="va">wt</span>, <span class="va">d</span><span class="op">$</span><span class="va">mpg</span><span class="op">)</span>, w <span class="op">=</span> <span class="fl">5</span>, h <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p>By default the scenarios are the baseline’s vignettes and help-page examples (<code><a href="reference/from_vignettes.html">from_vignettes()</a></code> and <code><a href="reference/from_vignettes.html">from_examples()</a></code>); scenario files add code neither covers.</p>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/hdbt/pkgdossier" class="external-link">pkgdossier</a></span><span class="op">)</span></span>
+<span><span class="va">cmp</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/run_dossier.html">run_dossier</a></span><span class="op">(</span><span class="fu"><a href="reference/example_dossier.html">example_dossier</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co"># what breaks code or moves results</span></span>
+<span><span class="fu"><a href="reference/differences.html">differences</a></span><span class="op">(</span><span class="va">cmp</span>, max_severity <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+</div>
 <div class="section level2">
-<h2 id="on-pull-requests">On pull requests<a class="anchor" aria-label="anchor" href="#on-pull-requests"></a>
+<h2 id="gallery">Gallery<a class="anchor" aria-label="anchor" href="#gallery"></a>
 </h2>
-<p><code><a href="reference/write_dossier_md.html">write_dossier_md()</a></code> writes a short Markdown summary for a pull-request comment. The package ships a GitHub Actions workflow that runs a dossier of the CRAN release against each pull request, uploads the report and posts the summary:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.copy</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"github"</span>, <span class="st">"pkgdossier.yaml"</span>, package <span class="op">=</span> <span class="st">"pkgdossier"</span><span class="op">)</span>,</span>
-<span>          <span class="st">".github/workflows/pkgdossier.yaml"</span><span class="op">)</span></span></code></pre></div>
-<p>Differences you have read and found intended can be accepted with <code><a href="reference/accept_differences.html">accept_differences()</a></code>, which writes them to a CSV file of rules; pass that file to <code><a href="reference/compare_runs.html">compare_runs()</a></code> or <code><a href="reference/run_dossier.html">run_dossier()</a></code> as <code>accept</code>, and later summaries list only what nobody has looked at yet. The workflow fails its check, through <code><a href="reference/check_differences.html">check_differences()</a></code>, when severe differences remain that are neither accepted nor named by NEWS.</p>
-<p>Nothing is downloaded until <code><a href="reference/prepare_versions.html">prepare_versions()</a></code>, which says what it fetches and where. Everything is written to the work folder (<code><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir()</a></code> by default).</p>
+<p>What the report shows for <code><a href="reference/example_dossier.html">example_dossier()</a></code>, drawn from the same comparison. Select a figure to open it at full size.</p>
+<div class="md-gallery">
+<div class="md-gallery-item">
+<a href="gallery/differences-by-kind.svg"><img src="gallery/differences-by-kind.svg" width="648" height="403" loading="lazy" alt="Bar chart of the example's differences by kind, from unstable and error new to export added, coloured by severity."><span class="md-gallery-caption"><strong>Every difference, labelled</strong>The differences by kind, coloured by the severity the report sorts them by.</span></a>
+</div>
+<div class="md-gallery-item">
+<a href="gallery/plot-pair.svg"><img src="gallery/plot-pair.svg" width="648" height="432" loading="lazy" alt="The same scatter plot drawn under version 1.0.0 in black and under 1.1.0 in red, and a third panel marking the pixels that differ."><span class="md-gallery-caption"><strong>Plots, before and after</strong>The same plotting code under each version, and the pixels that differ.</span></a>
+</div>
+<div class="md-gallery-item">
+<a href="gallery/printed-output.svg"><img src="gallery/printed-output.svg" width="648" height="403" loading="lazy" alt="A table of changed printed output, console messages, errors and warnings, with the text under 1.0.0 beside the text under 1.1.0."><span class="md-gallery-caption"><strong>What users read</strong>Printed output, console messages, errors and warnings that changed.</span></a>
+</div>
+<div class="md-gallery-item">
+<a href="gallery/steps-map.svg"><img src="gallery/steps-map.svg" width="648" height="403" loading="lazy" alt="One tile per step of the three scenarios, coloured by the most severe difference in the step, grey where nothing changed."><span class="md-gallery-caption"><strong>Every step at a glance</strong>Each step of the three scenarios, coloured by its most severe difference.</span></a>
+</div>
+<div class="md-gallery-item">
+<a href="gallery/news-coverage.svg"><img src="gallery/news-coverage.svg" width="648" height="403" loading="lazy" alt="Stacked bars by severity: differences in steps that a NEWS bullet names, and differences in steps that no NEWS bullet names."><span class="md-gallery-caption"><strong>Checked against NEWS</strong>Which differences a NEWS bullet names, and which no bullet mentions.</span></a>
+</div>
+<div class="md-gallery-item">
+<a href="gallery/timings.svg"><img src="gallery/timings.svg" width="648" height="403" loading="lazy" alt="Median and range of the timings of each step under both versions; one step became slower and one faster."><span class="md-gallery-caption"><strong>Run time per step</strong>Each version’s timings per step; only consistent changes are labelled.</span></a>
 </div>
 </div>
+</div>
+<div class="section level2">
+<h2 id="guides">Guides<a class="anchor" aria-label="anchor" href="#guides"></a>
+</h2>
+<table class="table">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead><tr>
+<th align="left">Guide</th>
+<th align="left">What it covers</th>
+</tr></thead>
+<tbody>
+<tr>
+<td align="left"><a href="articles/pkgdossier.html">Getting started</a></td>
+<td align="left">A first dossier on the bundled example: run it, read the differences, check them against NEWS.</td>
+</tr>
+<tr>
+<td align="left"><a href="articles/before-a-release.html">Before a release</a></td>
+<td align="left">Run the dossier on your package, read the verdict, decide about each difference and record the decisions.</td>
+</tr>
+<tr>
+<td align="left"><a href="articles/on-pull-requests.html">On pull requests</a></td>
+<td align="left">The GitHub Actions workflow that comments on each pull request and fails when a severe change is neither in NEWS nor accepted.</td>
+</tr>
+<tr>
+<td align="left"><a href="articles/writing-scenarios.html">Writing scenarios</a></td>
+<td align="left">Code your users run that neither the vignettes nor the examples show: the README, answers to issues, analyses in papers.</td>
+</tr>
+<tr>
+<td align="left"><a href="articles/baselines-and-dependencies.html">Baselines and dependencies</a></td>
+<td align="left">Other baselines than the CRAN release, packages not on CRAN, and the dependency versions both versions run against.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section level2">
+<h2 id="how-it-differs">How it differs<a class="anchor" aria-label="anchor" href="#how-it-differs"></a>
+</h2>
+<p>A package’s tests check that each version is consistent with itself, so a change in a default, an estimate or a printed summary passes them as long as the new code agrees with itself. Snapshot tests catch only what a maintainer chose to pin. <code>R CMD check</code> and reverse-dependency checks report whether code runs, not what it now returns.</p>
+<p>Other tools compare other things. packageDiff, pkgdiff and diffify compare functions, arguments, dependencies and NEWS between two versions without running any code; revdepcheck runs <code>R CMD check</code> on reverse dependencies and reports whether each passes; waldo compares two R objects. pkgdossier runs the released version’s user-facing code under both versions and reports, step by step, what changed:</p>
+<ul>
+<li>Both versions are built from source, installed in their own libraries and run in fresh R processes, twice each in the order baseline, candidate, candidate, baseline. A step whose results differ between two runs of the same version is set aside as unstable rather than reported as a change.</li>
+<li>Values that change from run to run for reasons unrelated to the package, such as temporary paths and memory addresses, are masked. Numbers are compared with a relative tolerance, and printed output whose only change is digits within it is not labelled.</li>
+<li>Each difference gets one of twenty kinds and a severity. Whether it is intended is left to you: for each one you get the evidence and the NEWS bullets that name a function the step uses.</li>
+<li>Exports and function signatures are compared as well, and the summary lists the exported functions and NEWS bullets that no scenario exercises.</li>
+<li>Results come back as data, as JSON with a published schema and as a standalone HTML report. A Markdown summary and a GitHub Actions workflow bring them to pull requests.</li>
+</ul>
+</div>
+<div class="section level2">
+<h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
+</h2>
+<p>Bulut H (2026). <em>pkgdossier: Compare What Users Meet Before and After a Package Upgrade</em>. R package version 0.1.0, <a href="https://github.com/hdbt/pkgdossier" class="external-link uri">https://github.com/hdbt/pkgdossier</a>.</p>
+<p><code>citation("pkgdossier")</code> gives the same entry, with a BibTeX version.</p>
+</div>
+
   </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">

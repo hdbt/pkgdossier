@@ -1,162 +1,143 @@
-# pkgdossier
+# See what your users meet after an upgrade
 
-[![R-CMD-check](https://github.com/hdbt/pkgdossier/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/hdbt/pkgdossier/actions/workflows/R-CMD-check.yaml)
+Upgrade checks for R packages
 
-pkgdossier runs the code users learned from a package’s released version
-(its vignettes and help-page examples, or scenario scripts) unchanged
-under that release and under a candidate version, each installed in its
-own library and run in its own R process, and reports what a user meets
-after upgrading: new errors and warnings, changed printed output, moved
-numbers, removed or added object fields, changed plots, and changes in
-run time.
+pkgdossier runs the code users learned from your package’s release, its
+vignettes and help-page examples, unchanged under that release and under
+the new version, each in its own library and R process. It reports what
+users meet after upgrading: new errors and warnings, changed output,
+moved numbers, removed fields, changed plots and slower steps, each with
+a mechanical label.
 
-Each difference gets a mechanical label (`error_new`, `field_removed`,
-`value_moved`, `output_changed`, `plot_changed`, `slower`, …). Whether a
-change is intended, undocumented or a defect is left to the reader.
+[Get started](https://hdbt.github.io/pkgdossier/articles/pkgdossier.md)
+[See the gallery](#gallery)
 
-In your package’s folder, one call:
+`pak::pak("hdbt/pkgdossier")`
+
+[![The Differences section of a pkgdossier report: counts of each kind
+of difference, then a table listing each difference with its step, where
+it is, and the values under version 1.0.0 and
+1.1.0.](gallery/report-differences.png)](https://hdbt.github.io/pkgdossier/gallery/report-differences.png)
+
+The report for
+[`example_dossier()`](https://hdbt.github.io/pkgdossier/reference/example_dossier.md),
+a tiny package bundled with pkgdossier in two versions with one planted
+difference of each kind.
+
+## One call
+
+In your package’s folder,
+[`run_dossier()`](https://hdbt.github.io/pkgdossier/reference/run_dossier.md)
+compares the folder with the package’s CRAN release. It installs both
+versions, runs the release’s vignettes and help-page examples under
+each, opens the HTML report and prints a summary that starts with a
+verdict:
 
 ``` r
 
 pkgdossier::run_dossier()
 ```
 
-compares the folder with the package’s CRAN release. It installs both,
-runs the release’s vignettes and help-page examples under each, compares
-everything they produce, opens the HTML report and prints a summary that
-starts with a verdict. Before anything is downloaded it asks, and it
-says what is wrong when it cannot start: not a package folder, no CRAN
-release yet (it names the git tags to use instead), a dependency
-missing. A step that hangs is stopped after 5 minutes and recorded. Call
-it again after a fix: only the changed version is rebuilt and rerun.
-
-Every setting has one home. What is compared and how the runs are made
-go to
-[`dossier()`](https://hdbt.github.io/pkgdossier/reference/dossier.md);
-how the runs go stays with
-[`run_dossier()`](https://hdbt.github.io/pkgdossier/reference/run_dossier.md);
-the tolerances go to
-[`compare_runs()`](https://hdbt.github.io/pkgdossier/reference/compare_runs.md)
-through
-[`run_dossier()`](https://hdbt.github.io/pkgdossier/reference/run_dossier.md):
+To try it without network access, run the bundled example:
 
 ``` r
 
-run_dossier(dossier("mypkg", base = cran_version("0.2.1")))   # another baseline
-run_dossier(dossier("mypkg", reps = 0), workers = 2)           # a quick look, no timing labels
-run_dossier(tol = 1e-3)                                        # a looser tolerance
-
-d <- dossier(
-  pkg       = "mypkg",
-  base      = cran_release(),                 # or cran_version("0.2.1"), tarball("...")
-  candidate = git_ref("path/to/mypkg", "main"), # or local_path("path/to/mypkg")
-  scenarios = list(from_vignettes(),          # the baseline's vignettes
-                   from_examples(),           # its help-page examples
-                   scenario_file("dev/dossier/scenarios.R")),
-  reps      = 3,
-  deps      = deps_shared()                   # or deps_cran(), deps_snapshot()
-)
-cmp <- run_dossier(d)    # the report and the JSON go into the work folder
+library(pkgdossier)
+cmp <- run_dossier(example_dossier())
+# what breaks code or moves results
+differences(cmp, max_severity = 2)
 ```
 
-A setting given in the wrong place is an error that writes out the right
-call.
+## Gallery
 
-As a user of a package, see what an upgrade would change for you before
-you install it: the version you have against the current release, both
-built from CRAN’s sources.
+What the report shows for
+[`example_dossier()`](https://hdbt.github.io/pkgdossier/reference/example_dossier.md),
+drawn from the same comparison. Select a figure to open it at full size.
 
-``` r
+[![Bar chart of the example's differences by kind, from unstable and
+error new to export added, coloured by
+severity.](gallery/differences-by-kind.svg)**Every difference,
+labelled**The differences by kind, coloured by the severity the report
+sorts them
+by.](https://hdbt.github.io/pkgdossier/gallery/differences-by-kind.svg)
 
-run_dossier(dossier("ggplot2", base = installed_version(), candidate = cran_release()))
-```
+[![The same scatter plot drawn under version 1.0.0 in black and under
+1.1.0 in red, and a third panel marking the pixels that
+differ.](gallery/plot-pair.svg)**Plots, before and after**The same
+plotting code under each version, and the pixels that
+differ.](https://hdbt.github.io/pkgdossier/gallery/plot-pair.svg)
 
-Or stage by stage, each caching its work in the work folder (after a
-call to
-[`run_dossier()`](https://hdbt.github.io/pkgdossier/reference/run_dossier.md),
-`cmp$dossier` is the dossier it used):
+[![A table of changed printed output, console messages, errors and
+warnings, with the text under 1.0.0 beside the text under
+1.1.0.](gallery/printed-output.svg)**What users read**Printed output,
+console messages, errors and warnings that
+changed.](https://hdbt.github.io/pkgdossier/gallery/printed-output.svg)
 
-``` r
+[![One tile per step of the three scenarios, coloured by the most severe
+difference in the step, grey where nothing
+changed.](gallery/steps-map.svg)**Every step at a glance**Each step of
+the three scenarios, coloured by its most severe
+difference.](https://hdbt.github.io/pkgdossier/gallery/steps-map.svg)
 
-prepare_versions(d)      # download / export / build / install; provenance
-run_scenarios(d)         # base, candidate, candidate, base, each in a fresh R process
-cmp <- compare_runs(d)
-cmp                      # counts by kind of difference
-summary(cmp)             # one row per step
-differences(cmp, kind = "value_moved")
-write_dossier_html(cmp, dir = file.path(d$work, "page"))
-write_dossier_json(cmp, file.path(d$work, "dossier.json"))
-```
+[![Stacked bars by severity: differences in steps that a NEWS bullet
+names, and differences in steps that no NEWS bullet
+names.](gallery/news-coverage.svg)**Checked against NEWS**Which
+differences a NEWS bullet names, and which no bullet
+mentions.](https://hdbt.github.io/pkgdossier/gallery/news-coverage.svg)
 
-Everything that shapes the runs is set in
-[`dossier()`](https://hdbt.github.io/pkgdossier/reference/dossier.md);
-the stages take only how they run (time limits, parallel runs, whether
-to ask before downloading), and
-[`compare_runs()`](https://hdbt.github.io/pkgdossier/reference/compare_runs.md)
-takes the comparison’s tolerances, so it can be called again on the
-stored runs at no cost.
+[![Median and range of the timings of each step under both versions; one
+step became slower and one faster.](gallery/timings.svg)**Run time per
+step**Each version’s timings per step; only consistent changes are
+labelled.](https://hdbt.github.io/pkgdossier/gallery/timings.svg)
 
-[`vignette("pkgdossier")`](https://hdbt.github.io/pkgdossier/articles/pkgdossier.md)
-walks through a full dossier. To try it without network access,
-[`example_dossier()`](https://hdbt.github.io/pkgdossier/reference/example_dossier.md)
-describes a dossier over a tiny package bundled with pkgdossier, in two
-versions with one planted difference of each kind:
+## Guides
 
-``` r
+| Guide | What it covers |
+|:---|:---|
+| [Getting started](https://hdbt.github.io/pkgdossier/articles/pkgdossier.md) | A first dossier on the bundled example: run it, read the differences, check them against NEWS. |
+| [Before a release](https://hdbt.github.io/pkgdossier/articles/before-a-release.md) | Run the dossier on your package, read the verdict, decide about each difference and record the decisions. |
+| [On pull requests](https://hdbt.github.io/pkgdossier/articles/on-pull-requests.md) | The GitHub Actions workflow that comments on each pull request and fails when a severe change is neither in NEWS nor accepted. |
+| [Writing scenarios](https://hdbt.github.io/pkgdossier/articles/writing-scenarios.md) | Code your users run that neither the vignettes nor the examples show: the README, answers to issues, analyses in papers. |
+| [Baselines and dependencies](https://hdbt.github.io/pkgdossier/articles/baselines-and-dependencies.md) | Other baselines than the CRAN release, packages not on CRAN, and the dependency versions both versions run against. |
 
-d <- example_dossier()
-prepare_versions(d)
-run_scenarios(d)
-compare_runs(d)
-```
+## How it differs
 
-Scenario files use
-[`scenario()`](https://hdbt.github.io/pkgdossier/reference/step.md) and
-[`step()`](https://hdbt.github.io/pkgdossier/reference/step.md):
+A package’s tests check that each version is consistent with itself, so
+a change in a default, an estimate or a printed summary passes them as
+long as the new code agrees with itself. Snapshot tests catch only what
+a maintainer chose to pin. `R CMD check` and reverse-dependency checks
+report whether code runs, not what it now returns.
 
-``` r
+Other tools compare other things. packageDiff, pkgdiff and diffify
+compare functions, arguments, dependencies and NEWS between two versions
+without running any code; revdepcheck runs `R CMD check` on reverse
+dependencies and reports whether each passes; waldo compares two R
+objects. pkgdossier runs the released version’s user-facing code under
+both versions and reports, step by step, what changed:
 
-scenario("basics", title = "Linear model", source = "README",
-  step("setup", "setup", d <- head(mtcars, 20)),
-  step("fit", "fit", fit <- lm(mpg ~ wt, data = d)),
-  step("coef", "print", coef(fit), values = TRUE),
-  step("plot", "plot", plot(d$wt, d$mpg), w = 5, h = 4)
-)
-```
+- Both versions are built from source, installed in their own libraries
+  and run in fresh R processes, twice each in the order baseline,
+  candidate, candidate, baseline. A step whose results differ between
+  two runs of the same version is set aside as unstable rather than
+  reported as a change.
+- Values that change from run to run for reasons unrelated to the
+  package, such as temporary paths and memory addresses, are masked.
+  Numbers are compared with a relative tolerance, and printed output
+  whose only change is digits within it is not labelled.
+- Each difference gets one of twenty kinds and a severity. Whether it is
+  intended is left to you: for each one you get the evidence and the
+  NEWS bullets that name a function the step uses.
+- Exports and function signatures are compared as well, and the summary
+  lists the exported functions and NEWS bullets that no scenario
+  exercises.
+- Results come back as data, as JSON with a published schema and as a
+  standalone HTML report. A Markdown summary and a GitHub Actions
+  workflow bring them to pull requests.
 
-By default the scenarios are the baseline’s vignettes and help-page
-examples
-([`from_vignettes()`](https://hdbt.github.io/pkgdossier/reference/from_vignettes.md)
-and
-[`from_examples()`](https://hdbt.github.io/pkgdossier/reference/from_vignettes.md));
-scenario files add code neither covers.
+## Citation
 
-## On pull requests
+Bulut H (2026). *pkgdossier: Compare What Users Meet Before and After a
+Package Upgrade*. R package version 0.1.0,
+<https://github.com/hdbt/pkgdossier>.
 
-[`write_dossier_md()`](https://hdbt.github.io/pkgdossier/reference/write_dossier_md.md)
-writes a short Markdown summary for a pull-request comment. The package
-ships a GitHub Actions workflow that runs a dossier of the CRAN release
-against each pull request, uploads the report and posts the summary:
-
-``` r
-
-file.copy(system.file("github", "pkgdossier.yaml", package = "pkgdossier"),
-          ".github/workflows/pkgdossier.yaml")
-```
-
-Differences you have read and found intended can be accepted with
-[`accept_differences()`](https://hdbt.github.io/pkgdossier/reference/accept_differences.md),
-which writes them to a CSV file of rules; pass that file to
-[`compare_runs()`](https://hdbt.github.io/pkgdossier/reference/compare_runs.md)
-or
-[`run_dossier()`](https://hdbt.github.io/pkgdossier/reference/run_dossier.md)
-as `accept`, and later summaries list only what nobody has looked at
-yet. The workflow fails its check, through
-[`check_differences()`](https://hdbt.github.io/pkgdossier/reference/check_differences.md),
-when severe differences remain that are neither accepted nor named by
-NEWS.
-
-Nothing is downloaded until
-[`prepare_versions()`](https://hdbt.github.io/pkgdossier/reference/prepare_versions.md),
-which says what it fetches and where. Everything is written to the work
-folder ([`tempdir()`](https://rdrr.io/r/base/tempfile.html) by default).
+`citation("pkgdossier")` gives the same entry, with a BibTeX version.
