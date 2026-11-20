@@ -40,6 +40,10 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="development version" id="pkgdossier-development-version">pkgdossier (development version)<a class="anchor" aria-label="anchor" href="#pkgdossier-development-version"></a></h2>
+<ul><li>The GitHub Actions workflow template no longer overwrites comments that other workflows post as <code>github-actions[bot]</code>, such as coverage reports. It used to edit the bot’s last comment on the pull request, whichever workflow had posted it; it now edits its own, found by the <code>&lt;!-- pkgdossier --&gt;</code> marker that <code><a href="../reference/write_dossier_md.html">write_dossier_md()</a></code> puts on the summary’s first line, and posts one when there is none. Repositories that copied the template should copy it again.</li>
+</ul></div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.0" id="pkgdossier-010">pkgdossier 0.1.0<a class="anchor" aria-label="anchor" href="#pkgdossier-010"></a></h2>
 <p>First release.</p>
 <ul><li>
@@ -55,7 +59,8 @@
 <li>
 <code><a href="../reference/example_dossier.html">example_dossier()</a></code> runs all of this on a small bundled package.</li>
 </ul></div>
-  </main></div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">

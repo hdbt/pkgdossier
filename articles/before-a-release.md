@@ -73,7 +73,7 @@ cmp
 #> 
 #> NEWS candidates (3 bullet(s) in NEWS.md after 1.0.0): 18 of 24 difference(s) in steps no NEWS bullet names.
 #> 
-#> 1 difference(s) in udfixture's own DESCRIPTION fields (Version, Packaged, ...), as an example printing sessionInfo() shows them, are not listed.
+#> 2 difference(s) in udfixture's own DESCRIPTION fields (Version, Packaged, ...), as an example printing sessionInfo() shows them, are not listed.
 #> 
 #> Coverage: the scenarios use 17 of 18 exported functions. Not used: new_helper.
 #> 
@@ -297,9 +297,9 @@ cmp
 #> 
 #> NEWS candidates (3 bullet(s) in NEWS.md after 1.0.0): 17 of 17 difference(s) in steps no NEWS bullet names.
 #> 
-#> 1 difference(s) in udfixture's own DESCRIPTION fields (Version, Packaged, ...), as an example printing sessionInfo() shows them, are not listed.
+#> 2 difference(s) in udfixture's own DESCRIPTION fields (Version, Packaged, ...), as an example printing sessionInfo() shows them, are not listed.
 #> 
-#> 7 difference(s) accepted by 7 rule(s) in /tmp/Rtmp6OGblw/accepted.csv; not counted above.
+#> 7 difference(s) accepted by 7 rule(s) in /tmp/Rtmppq83nL/accepted.csv; not counted above.
 #> 
 #> Coverage: the scenarios use 17 of 18 exported functions. Not used: new_helper.
 #> 

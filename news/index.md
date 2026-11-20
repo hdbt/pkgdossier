@@ -1,5 +1,16 @@
 # Changelog
 
+## pkgdossier (development version)
+
+- The GitHub Actions workflow template no longer overwrites comments
+  that other workflows post as `github-actions[bot]`, such as coverage
+  reports. It used to edit the bot’s last comment on the pull request,
+  whichever workflow had posted it; it now edits its own, found by the
+  `<!-- pkgdossier -->` marker that
+  [`write_dossier_md()`](https://hdbt.github.io/pkgdossier/reference/write_dossier_md.md)
+  puts on the summary’s first line, and posts one when there is none.
+  Repositories that copied the template should copy it again.
+
 ## pkgdossier 0.1.0
 
 First release.
