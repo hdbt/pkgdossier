@@ -5,6 +5,11 @@ url: https://hdbt.github.io/pkgdossier/
 
 template:
   bootstrap: 5
+  # pkgdown takes the site logo from man/figures/logo.svg; link previews need a PNG.
+  opengraph:
+    image:
+      src: man/figures/logo.png
+      alt: "pkgdossier logo"
 
 home:
   title: "pkgdossier: compare what users meet before and after a package upgrade"

@@ -1,4 +1,4 @@
-# pkgdossier
+# pkgdossier <img src="man/figures/logo.png" align="right" height="139" alt="pkgdossier logo" />
 
 [![R-CMD-check](https://github.com/hdbt/pkgdossier/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/hdbt/pkgdossier/actions/workflows/R-CMD-check.yaml)
 
